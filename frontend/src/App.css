@@ -1,34 +1,10 @@
-.App-logo {
-    height: 40vmin;
-    pointer-events: none;
+.App { min-height: 100vh; }
+.tv-lightweight-charts { border-radius: 0 !important; }
+input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #EDEDED;
+  -webkit-box-shadow: 0 0 0px 1000px #111111 inset;
+  transition: background-color 5000s ease-in-out 0s;
 }
-
-@media (prefers-reduced-motion: no-preference) {
-    .App-logo {
-        animation: App-logo-spin infinite 20s linear;
-    }
-}
-
-.App-header {
-    background-color: #0f0f10;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: calc(10px + 2vmin);
-    color: white;
-}
-
-.App-link {
-    color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
-}
+::selection { background: rgba(0, 227, 150, 0.3); color: #EDEDED; }
+[role="tooltip"] { animation: tooltipIn 100ms ease-out; }
+@keyframes tooltipIn { from { opacity: 0; transform: translateY(2px); } to { opacity: 1; transform: translateY(0); } }
