@@ -1,0 +1,146 @@
+{
+  "identity": {
+    "name": "E1",
+    "role": "Anti-AI Creative Designer",
+    "mission": "Create a production-grade, high-density institutional trading terminal that feels like a Bloomberg Terminal met a modern crypto exchange.",
+    "tone": "Serious, High-Performance, Technical, Trustworthy, Precision."
+  },
+  "theme": {
+    "mode": "dark",
+    "primary_strategy": "The 'Dark Mode Default' rule is absolute. No light mode toggle needed unless explicitly requested by user logic, but strictly prefer Dark. The interface must be 'Lights Out' for professional traders."
+  },
+  "colors": {
+    "palette": {
+      "background": {
+        "base": "#050505",
+        "card": "#0A0A0A",
+        "surface": "#111111",
+        "overlay": "rgba(0, 0, 0, 0.8)"
+      },
+      "border": {
+        "subtle": "#222222",
+        "default": "#333333",
+        "active": "#444444"
+      },
+      "text": {
+        "primary": "#EDEDED",
+        "secondary": "#A1A1AA",
+        "muted": "#52525B",
+        "accent": "#FFFFFF"
+      },
+      "functional": {
+        "buy_bullish": "#00E396",
+        "sell_bearish": "#FF0055",
+        "neutral": "#3B82F6",
+        "warning": "#F59E0B",
+        "success": "#00E396",
+        "error": "#FF0055"
+      },
+      "chart": {
+        "up": "#00E396",
+        "down": "#FF0055",
+        "line": "#2E93fA",
+        "area_fill": "rgba(46, 147, 250, 0.1)"
+      }
+    },
+    "rules": [
+      "NEVER use gradients for backgrounds. Use solid deep blacks.",
+      "Avoid purple/violet (#7351B7) completely. This is not a SaaS marketing site.",
+      "Green means BUY/PROFIT. Red means SELL/LOSS. Do not use these colors for anything else (like 'Delete' buttons should be muted red, not neon).",
+      "Use 1px contrasting borders to define sections. Shadow is secondary."
+    ]
+  },
+  "typography": {
+    "fonts": {
+      "heading": {
+        "family": "Barlow Condensed, Inter, sans-serif",
+        "weights": ["600", "700"],
+        "tracking": "tight"
+      },
+      "body": {
+        "family": "Inter, sans-serif",
+        "weights": ["400", "500"]
+      },
+      "data": {
+        "family": "JetBrains Mono, Roboto Mono, monospace",
+        "purpose": "ALL numbers, tickers, prices, P&L, and code blocks MUST use this font."
+      }
+    },
+    "scale": {
+      "h1": "text-3xl font-bold tracking-tight",
+      "h2": "text-2xl font-semibold tracking-tight",
+      "h3": "text-xl font-medium",
+      "body": "text-sm text-zinc-400",
+      "data_lg": "text-2xl font-mono font-medium",
+      "data_sm": "text-xs font-mono text-zinc-500"
+    }
+  },
+  "layout": {
+    "grid_system": {
+      "mode": "Bento High Density",
+      "columns": "grid-cols-12",
+      "gap": "gap-2 or gap-1",
+      "padding": "p-1 or p-2"
+    },
+    "spacing": {
+      "container_padding": "p-4 md:p-6",
+      "section_gap": "gap-4",
+      "component_density": "compact"
+    },
+    "rules": [
+      "Minimize whitespace. This is a terminal, not a landing page.",
+      "Use 'border-r' and 'border-b' to create grid lines between widgets.",
+      "Ensure 100% height utilization. No jagged bottoms.",
+      "Sidebar navigation should be collapsible or icon-based to maximize chart real estate."
+    ]
+  },
+  "components": {
+    "shadcn_customization": {
+      "general": "Radius MUST be 'rounded-none' or 'rounded-sm'. No large round corners.",
+      "card": "Bg-black, border-zinc-800. Remove shadow. Add 1px border.",
+      "button": "Sharp edges (rounded-sm). Primary: White text on Zinc-800 bg. Hover: White on Zinc-700. Destructive: Red text on transparent bg.",
+      "input": "H-8 (dense). Bg-zinc-950. Border-zinc-800. Focus: Border-zinc-600 (no ring).",
+      "table": "Compact rows. Font-mono for numbers. border-b-zinc-800.",
+      "tabs": "Segmented control style. Bg-zinc-900. Active: Bg-zinc-800 text-white."
+    },
+    "libraries": {
+      "charts": "Recharts (for dashboard summaries) or TradingView Lightweight Charts (for the main terminal).",
+      "icons": "Lucide React (default). Use specific financial icons.",
+      "notifications": "Sonner (use strict, minimal toasts)."
+    }
+  },
+  "visual_enhancers": {
+    "borders": "Use subtle 1px borders (zinc-800) to separate all panels.",
+    "glassmorphism": "Use sparingly. Only for floating overlays (e.g., command palette, toaster). Blur-xl, bg-black/80.",
+    "animations": "Minimal. Instant feedback. No bouncy springs. 'duration-100 ease-out'.",
+    "scrolling": "Custom scrollbar style mandatory: w-1.5 bg-zinc-900 thumb-zinc-700 rounded-full."
+  },
+  "media": {
+    "images": {
+      "login_bg": {
+        "url": "https://images.unsplash.com/photo-1647067517631-aa36cda58a17?crop=entropy&cs=srgb&fm=jpg&q=85",
+        "alt": "Digital financial data stream",
+        "description": "Use as background for Login/Signup page with heavy overlay (bg-black/80) to ensure text readability."
+      }
+    },
+    "icons": {
+      "library": "lucide-react",
+      "style": "Stroke width 1.5px. Small size (w-4 h-4)."
+    }
+  },
+  "instructions_to_main_agent": [
+    "1. THEME ENFORCEMENT: Always start with the assumption of Dark Mode. Do not build light mode styles.",
+    "2. DENSITY: If a component looks 'airy' or 'spacious', make it denser. Reduce padding. Reduce font size.",
+    "3. DATA TYPOGRAPHY: Every time you render a price, percentage, or currency, WRAP IT in a font-mono class.",
+    "4. COLOR CODING: Check the value. If > 0, text-green-500. If < 0, text-red-500. THIS IS MANDATORY.",
+    "5. BORDERS: Avoid shadows. Use borders to define hierarchy.",
+    "6. CHARTS: For the 'Chart Terminal', create a placeholder container that simulates a TradingView chart if the library isn't fully implemented yet, but plan for 'tradingview-lightweight-charts'."
+  ],
+  "universal_guidelines": [
+    "Avoid generic 'AI slop' aesthetics (purple gradients, centered everything).",
+    "Use z-index hierarchy for overlays.",
+    "Interactive elements must have hover states (text-white on hover).",
+    "No 'transition: all'. Use specific transitions.",
+    "All interactive elements MUST include data-testid attributes."
+  ]
+}
