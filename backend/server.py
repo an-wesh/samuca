@@ -41,6 +41,15 @@ async def signup(req: SignupRequest):
         "role": "user",
         "created_at": datetime.now(timezone.utc).isoformat(),
         "portfolio_value": 100000.0,
+        "virtual_capital": 100000.0,
+        "is_active": True,
+        "trading_enabled": True,
+        "risk_limits": {
+            "max_daily_loss_pct": 5.0,
+            "max_position_size_pct": 20.0,
+            "max_concurrent_positions": 5,
+            "max_leverage": 1.0
+        }
     }
     await db.users.insert_one(user)
     token = jwt.encode(
