@@ -122,7 +122,7 @@ async def get_cryptocurrency_news(limit: int = 10, user=Depends(get_current_user
 @news_router.post("/analyze")
 async def analyze_news_sentiment(req: NewsAnalysisRequest, user=Depends(get_current_user)):
     """
-    Analyze sentiment of news headlines using AI
+    Analyze sentiment of news headlines using Grok AI
     Returns scores from -1 (very bearish) to +1 (very bullish)
     """
     if not req.headlines:
@@ -131,13 +131,11 @@ async def analyze_news_sentiment(req: NewsAnalysisRequest, user=Depends(get_curr
     results = []
     
     try:
-        if EMERGENT_LLM_KEY:
-            from emergentintegrations.llm.chat import LlmChat, UserMessage
+        if XAI_API_KEY:
+            # Use Grok API for sentiment analysis
+            headlines_text = "\n".join([f"{i+1}. {h}" for i, h in enumerate(req.headlines)])
             
-            chat = LlmChat(
-                api_key=EMERGENT_LLM_KEY,
-                session_id=f"sentiment-{uuid.uuid4()}",
-                system_message="""You are an expert financial sentiment analyzer specializing in Indian and global markets.
+            system_prompt = """You are an expert financial sentiment analyzer specializing in Indian and global markets.
 For each headline provided, analyze the market sentiment and return ONLY a JSON array.
 Each object must have exactly these fields:
 - "score": float from -1.0 (extremely bearish) to 1.0 (extremely bullish)
@@ -147,33 +145,53 @@ Each object must have exactly these fields:
 - "market_impact": "high", "medium", or "low"
 
 Return ONLY the JSON array, no other text or explanation."""
-            ).with_model("openai", "gpt-5.2")
-            
-            headlines_text = "\n".join([f"{i+1}. {h}" for i, h in enumerate(req.headlines)])
-            response = await chat.send_message(UserMessage(text=f"Analyze these financial headlines:\n{headlines_text}"))
-            
-            # Parse response
-            response_text = response.strip()
-            if "```" in response_text:
-                response_text = response_text.split("```")[1]
-                if response_text.startswith("json"):
-                    response_text = response_text[4:]
-            
-            parsed = json.loads(response_text)
-            
-            if isinstance(parsed, list):
-                for i, item in enumerate(parsed):
-                    results.append({
-                        "headline": req.headlines[i] if i < len(req.headlines) else "",
-                        "score": float(item.get("score", 0)),
-                        "label": item.get("label", "Neutral"),
-                        "confidence": int(item.get("confidence", 50)),
-                        "key_factors": item.get("key_factors", []),
-                        "market_impact": item.get("market_impact", "medium"),
-                        "ai_analyzed": True
-                    })
+
+            async with aiohttp.ClientSession() as session:
+                async with session.post(
+                    "https://api.x.ai/v1/chat/completions",
+                    headers={
+                        "Authorization": f"Bearer {XAI_API_KEY}",
+                        "Content-Type": "application/json"
+                    },
+                    json={
+                        "model": "grok-3-mini",
+                        "messages": [
+                            {"role": "system", "content": system_prompt},
+                            {"role": "user", "content": f"Analyze these financial headlines:\n{headlines_text}"}
+                        ],
+                        "temperature": 0.1,
+                        "max_tokens": 1000
+                    },
+                    timeout=30
+                ) as response:
+                    if response.status == 200:
+                        data = await response.json()
+                        response_text = data["choices"][0]["message"]["content"].strip()
+                        
+                        # Parse response
+                        if "```" in response_text:
+                            response_text = response_text.split("```")[1]
+                            if response_text.startswith("json"):
+                                response_text = response_text[4:]
+                        
+                        parsed = json.loads(response_text)
+                        
+                        if isinstance(parsed, list):
+                            for i, item in enumerate(parsed):
+                                results.append({
+                                    "headline": req.headlines[i] if i < len(req.headlines) else "",
+                                    "score": float(item.get("score", 0)),
+                                    "label": item.get("label", "Neutral"),
+                                    "confidence": int(item.get("confidence", 50)),
+                                    "key_factors": item.get("key_factors", []),
+                                    "market_impact": item.get("market_impact", "medium"),
+                                    "ai_analyzed": True
+                                })
+                    else:
+                        error_text = await response.text()
+                        logger.warning(f"Grok API error: {response.status} - {error_text}")
     except Exception as e:
-        logger.warning(f"LLM sentiment analysis failed, using fallback: {e}")
+        logger.warning(f"Grok sentiment analysis failed, using fallback: {e}")
         results = []
     
     # Fallback to keyword-based analysis
