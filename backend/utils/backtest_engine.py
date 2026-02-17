@@ -277,8 +277,16 @@ class BacktestEngine:
         pnl_pct = (exec_price - pos["entry_price"]) / pos["entry_price"] * 100
         
         # Calculate holding period
-        entry_dt = datetime.fromisoformat(pos["entry_time"].replace("Z", "+00:00"))
-        exit_dt = datetime.fromisoformat(timestamp.replace("Z", "+00:00"))
+        entry_ts = pos["entry_time"]
+        if isinstance(entry_ts, str):
+            entry_dt = datetime.fromisoformat(entry_ts.replace("Z", "+00:00"))
+        else:
+            entry_dt = datetime.fromtimestamp(float(entry_ts), tz=timezone.utc)
+        
+        if isinstance(timestamp, str):
+            exit_dt = datetime.fromisoformat(timestamp.replace("Z", "+00:00"))
+        else:
+            exit_dt = datetime.fromtimestamp(float(timestamp), tz=timezone.utc)
         holding_period = int((exit_dt - entry_dt).total_seconds() / 3600)  # hours
         
         self.capital += proceeds
