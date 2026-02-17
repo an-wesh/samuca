@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { LayoutDashboard, Blocks, LineChart, FlaskConical, Wallet, Bot, Activity, LogOut, Rocket } from "lucide-react";
+import { LayoutDashboard, Blocks, LineChart, FlaskConical, Wallet, Bot, Activity, LogOut, Rocket, Newspaper } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useAuthStore } from "@/lib/store";
@@ -10,6 +10,7 @@ const NAV_ITEMS = [
   { path: "/chart", icon: LineChart, label: "Chart Terminal" },
   { path: "/backtest", icon: FlaskConical, label: "Backtest Lab" },
   { path: "/deploy", icon: Rocket, label: "Live Deployments" },
+  { path: "/news", icon: Newspaper, label: "News & Sentiment" },
   { path: "/paper-trading", icon: Wallet, label: "Paper Trading" },
   { path: "/bots", icon: Bot, label: "Bot Management" },
 ];
