@@ -30,6 +30,7 @@ function App() {
         <Route path="/backtest" element={<ProtectedRoute><BacktestLabPage /></ProtectedRoute>} />
         <Route path="/paper-trading" element={<ProtectedRoute><PaperTradingPage /></ProtectedRoute>} />
         <Route path="/bots" element={<ProtectedRoute><BotManagementPage /></ProtectedRoute>} />
+        <Route path="/deploy" element={<ProtectedRoute><DeploymentsPage /></ProtectedRoute>} />
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
