@@ -4,7 +4,7 @@ Candle-by-candle simulation with realistic costs, slippage, and advanced metrics
 """
 import pandas as pd
 import numpy as np
-from typing import Dict, Any, List, Optional, Tuple
+from typing import Dict, Any, List, Optional, Tuple, Union
 from datetime import datetime, timezone
 from dataclasses import dataclass, field
 import logging
@@ -18,6 +18,15 @@ from utils.indicators import (
 )
 
 logger = logging.getLogger(__name__)
+
+
+def normalize_timestamp(ts: Union[str, int, float, np.integer]) -> str:
+    """Convert any timestamp format to ISO string"""
+    if isinstance(ts, str):
+        return ts
+    elif isinstance(ts, (int, float, np.integer)):
+        return datetime.fromtimestamp(float(ts), tz=timezone.utc).isoformat()
+    return str(ts)
 
 
 @dataclass
