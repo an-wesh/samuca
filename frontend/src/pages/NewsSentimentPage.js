@@ -180,12 +180,12 @@ export default function NewsSentimentPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold tracking-tight">News & Sentiment</h1>
         <div className="flex items-center gap-2">
-          <Select value={selectedSymbol} onValueChange={setSelectedSymbol}>
+          <Select value={selectedSymbol || "all"} onValueChange={(v) => setSelectedSymbol(v === "all" ? "" : v)}>
             <SelectTrigger className="h-8 w-28 bg-[#111] border-[#222] text-xs">
               <SelectValue placeholder="All Symbols" />
             </SelectTrigger>
             <SelectContent className="bg-[#0A0A0A] border-[#333]">
-              <SelectItem value="">All</SelectItem>
+              <SelectItem value="all">All</SelectItem>
               {["BTCUSD", "ETHUSD", "AAPL", "TSLA", "SPY"].map(s => (
                 <SelectItem key={s} value={s}>{s}</SelectItem>
               ))}
