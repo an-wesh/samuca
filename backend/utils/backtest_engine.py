@@ -328,8 +328,9 @@ class BacktestEngine:
         self.trades.append(trade)
         return trade
     
-    def update_equity(self, timestamp: str, current_price: float):
+    def update_equity(self, timestamp, current_price: float):
         """Update equity curve with current state"""
+        ts_str = normalize_timestamp(timestamp)
         positions_value = sum(p["quantity"] * current_price for p in self.positions)
         equity = self.capital + positions_value
         
@@ -338,7 +339,7 @@ class BacktestEngine:
         drawdown_pct = (drawdown / self.high_watermark) * 100 if self.high_watermark > 0 else 0
         
         self.equity_curve.append(EquityPoint(
-            timestamp=timestamp,
+            timestamp=ts_str,
             equity=equity,
             cash=self.capital,
             positions_value=positions_value,
