@@ -31,6 +31,7 @@ export default function ChartTerminalPage() {
       crosshair: { mode: 0, vertLine: { color: "#333", labelBackgroundColor: "#222" }, horzLine: { color: "#333", labelBackgroundColor: "#222" } },
       rightPriceScale: { borderColor: "#222", scaleMargins: { top: 0.1, bottom: 0.2 } },
       timeScale: { borderColor: "#222", timeVisible: true, secondsVisible: false },
+      localization: { locale: "en-US" },
     });
     chartRef.current = chart;
 
