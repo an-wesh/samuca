@@ -301,7 +301,7 @@ class BacktestEngine:
             
             exit_dt = datetime.fromisoformat(ts_str.replace("Z", "+00:00")) if isinstance(ts_str, str) else datetime.now(timezone.utc)
             holding_period = int((exit_dt - entry_dt).total_seconds() / 3600)  # hours
-        except:
+        except Exception:
             holding_period = 0
         
         self.capital += proceeds
