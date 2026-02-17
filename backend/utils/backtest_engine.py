@@ -554,8 +554,16 @@ class BacktestEngine:
         
         # CAGR calculation
         try:
-            start_dt = datetime.fromisoformat(timestamps[0].replace("Z", "+00:00"))
-            end_dt = datetime.fromisoformat(timestamps[-1].replace("Z", "+00:00"))
+            ts_start = timestamps[0]
+            ts_end = timestamps[-1]
+            if isinstance(ts_start, str):
+                start_dt = datetime.fromisoformat(ts_start.replace("Z", "+00:00"))
+            else:
+                start_dt = datetime.fromtimestamp(float(ts_start), tz=timezone.utc)
+            if isinstance(ts_end, str):
+                end_dt = datetime.fromisoformat(ts_end.replace("Z", "+00:00"))
+            else:
+                end_dt = datetime.fromtimestamp(float(ts_end), tz=timezone.utc)
             years = (end_dt - start_dt).total_seconds() / (365.25 * 24 * 3600)
             years = max(years, 1/365)  # Minimum 1 day
             cagr = ((final_equity / self.initial_capital) ** (1 / years) - 1) * 100
