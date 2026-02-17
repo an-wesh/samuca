@@ -1,14 +1,15 @@
 """
 News & Sentiment Analysis API Routes
-Real-time news feeds and AI-powered sentiment analysis
+Real-time news feeds and AI-powered sentiment analysis using Grok
 """
 from fastapi import APIRouter, Depends, HTTPException
-from database import db, get_current_user, EMERGENT_LLM_KEY
+from database import db, get_current_user, XAI_API_KEY
 from pydantic import BaseModel
 from typing import List, Optional
 import uuid
 import json
 import logging
+import aiohttp
 from datetime import datetime, timezone, timedelta
 
 from services.news_service import (
