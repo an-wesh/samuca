@@ -583,7 +583,7 @@ class BacktestEngine:
             years = (end_dt - start_dt).total_seconds() / (365.25 * 24 * 3600)
             years = max(years, 1/365)  # Minimum 1 day
             cagr = ((final_equity / self.initial_capital) ** (1 / years) - 1) * 100
-        except:
+        except Exception:
             cagr = total_return_pct
             
         # Daily returns for Sharpe/Sortino
