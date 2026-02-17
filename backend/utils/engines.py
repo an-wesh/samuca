@@ -177,7 +177,22 @@ def run_backtest(ohlcv_data, strategy, initial_capital=100000, commission_pct=0.
     if position > 0:
         capital += position * df.iloc[-1]["close"] * (1 - commission_pct / 100)
 
-    return {"equity_curve": equity_curve, "trades": trades, "metrics": _compute_metrics(trades, equity_curve, initial_capital)}
+    metrics = _compute_metrics(trades, equity_curve, initial_capital)
+    return {"equity_curve": _sanitize(equity_curve), "trades": _sanitize(trades), "metrics": _sanitize(metrics)}
+
+def _sanitize(obj):
+    """Convert numpy types to native Python types for JSON serialization."""
+    if isinstance(obj, dict):
+        return {k: _sanitize(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [_sanitize(v) for v in obj]
+    elif isinstance(obj, (np.integer,)):
+        return int(obj)
+    elif isinstance(obj, (np.floating,)):
+        return float(obj)
+    elif isinstance(obj, np.ndarray):
+        return obj.tolist()
+    return obj
 
 def _compute_metrics(trades, equity_curve, initial_capital):
     if not equity_curve:
