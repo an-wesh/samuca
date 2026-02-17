@@ -266,13 +266,16 @@ class BacktestEngine:
     def close_position(
         self,
         position_idx: int,
-        timestamp: str,
+        timestamp,
         price: float,
         reason: str = "Signal"
     ) -> Optional[TradeRecord]:
         """Close an existing position"""
         if position_idx >= len(self.positions):
             return None
+        
+        # Normalize timestamp
+        ts_str = normalize_timestamp(timestamp)
             
         pos = self.positions[position_idx]
         
@@ -290,23 +293,23 @@ class BacktestEngine:
         
         # Calculate holding period
         entry_ts = pos["entry_time"]
-        if isinstance(entry_ts, str):
-            entry_dt = datetime.fromisoformat(entry_ts.replace("Z", "+00:00"))
-        else:
-            entry_dt = datetime.fromtimestamp(float(entry_ts), tz=timezone.utc)
-        
-        if isinstance(timestamp, str):
-            exit_dt = datetime.fromisoformat(timestamp.replace("Z", "+00:00"))
-        else:
-            exit_dt = datetime.fromtimestamp(float(timestamp), tz=timezone.utc)
-        holding_period = int((exit_dt - entry_dt).total_seconds() / 3600)  # hours
+        try:
+            if isinstance(entry_ts, str):
+                entry_dt = datetime.fromisoformat(entry_ts.replace("Z", "+00:00"))
+            else:
+                entry_dt = datetime.fromtimestamp(float(entry_ts), tz=timezone.utc)
+            
+            exit_dt = datetime.fromisoformat(ts_str.replace("Z", "+00:00")) if isinstance(ts_str, str) else datetime.now(timezone.utc)
+            holding_period = int((exit_dt - entry_dt).total_seconds() / 3600)  # hours
+        except:
+            holding_period = 0
         
         self.capital += proceeds
         
         trade = TradeRecord(
             id=f"T{len(self.trades)+1:04d}",
             type="SELL",
-            timestamp=timestamp,
+            timestamp=ts_str,
             price=exec_price,
             quantity=pos["quantity"],
             value=value,
