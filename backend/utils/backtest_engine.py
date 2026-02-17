@@ -208,7 +208,7 @@ class BacktestEngine:
     
     def open_position(
         self,
-        timestamp: str,
+        timestamp,
         price: float,
         quantity: float,
         reason: str = "Signal"
@@ -216,6 +216,9 @@ class BacktestEngine:
         """Open a new position"""
         if len(self.positions) >= self.max_positions:
             return None
+        
+        # Normalize timestamp to string
+        ts_str = normalize_timestamp(timestamp)
             
         # Calculate execution price with slippage
         exec_price = self.calculate_slippage(price, "BUY")
@@ -239,7 +242,7 @@ class BacktestEngine:
         trade = TradeRecord(
             id=f"T{len(self.trades)+1:04d}",
             type="BUY",
-            timestamp=timestamp,
+            timestamp=ts_str,
             price=exec_price,
             quantity=quantity,
             value=value,
@@ -251,7 +254,7 @@ class BacktestEngine:
         )
         
         self.positions.append({
-            "entry_time": timestamp,
+            "entry_time": ts_str,
             "entry_price": exec_price,
             "quantity": quantity,
             "trade_id": trade.id
