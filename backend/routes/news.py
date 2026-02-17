@@ -1,5 +1,5 @@
 """
-News & Sentiment Analysis Service
+News & Sentiment Analysis API Routes
 Real-time news feeds and AI-powered sentiment analysis
 """
 from fastapi import APIRouter, Depends, HTTPException
@@ -9,113 +9,114 @@ from typing import List, Optional
 import uuid
 import json
 import logging
-import asyncio
 from datetime import datetime, timezone, timedelta
+
+from services.news_service import (
+    fetch_news_for_symbol, fetch_news_for_sector, 
+    fetch_market_news, fetch_crypto_news, get_mock_news
+)
 
 news_router = APIRouter(prefix="/api/news", tags=["news"])
 logger = logging.getLogger(__name__)
+
 
 class NewsAnalysisRequest(BaseModel):
     headlines: List[str]
     symbols: Optional[List[str]] = None
 
+
 class NewsFeedRequest(BaseModel):
     symbol: Optional[str] = None
+    sector: Optional[str] = None
     limit: int = 20
 
-# Mock news headlines for demonstration (in production, integrate with news APIs)
-MOCK_NEWS = {
-    "BTCUSD": [
-        {"headline": "Bitcoin Surges Past $100K as Institutional Adoption Accelerates", "source": "CryptoDaily", "sentiment": "bullish"},
-        {"headline": "Bitcoin Mining Difficulty Reaches All-Time High", "source": "BlockNews", "sentiment": "neutral"},
-        {"headline": "MicroStrategy Adds Another $500M in Bitcoin to Treasury", "source": "CoinDesk", "sentiment": "bullish"},
-        {"headline": "Bitcoin ETF Sees Record Inflows This Week", "source": "Bloomberg", "sentiment": "bullish"},
-        {"headline": "Regulatory Concerns Mount Over Crypto Exchanges", "source": "Reuters", "sentiment": "bearish"},
-        {"headline": "Bitcoin Network Hash Rate Continues Upward Trend", "source": "The Block", "sentiment": "neutral"},
-        {"headline": "Whale Alert: Large BTC Transfer to Unknown Wallet", "source": "WhaleAlert", "sentiment": "neutral"},
-        {"headline": "Bitcoin Dominance Rises Above 50%", "source": "CoinMarketCap", "sentiment": "bullish"},
-    ],
-    "ETHUSD": [
-        {"headline": "Ethereum 2.0 Staking Yields Attract Institutional Interest", "source": "DeFiPulse", "sentiment": "bullish"},
-        {"headline": "Ethereum Gas Fees Drop to Multi-Month Lows", "source": "Etherscan", "sentiment": "bullish"},
-        {"headline": "Major DeFi Protocol Announces Ethereum Expansion", "source": "DeFi Weekly", "sentiment": "bullish"},
-        {"headline": "Ethereum Foundation Releases Q4 Transparency Report", "source": "ETH News", "sentiment": "neutral"},
-        {"headline": "Layer 2 Solutions Drive Ethereum Scalability Forward", "source": "L2Beat", "sentiment": "bullish"},
-    ],
-    "AAPL": [
-        {"headline": "Apple Reports Record Q4 Revenue Driven by iPhone Sales", "source": "WSJ", "sentiment": "bullish"},
-        {"headline": "Apple Vision Pro Sales Exceed Analyst Expectations", "source": "Bloomberg", "sentiment": "bullish"},
-        {"headline": "Apple Faces Antitrust Scrutiny in EU Markets", "source": "Reuters", "sentiment": "bearish"},
-        {"headline": "Apple Services Revenue Continues Double-Digit Growth", "source": "CNBC", "sentiment": "bullish"},
-        {"headline": "New MacBook Pro with M4 Chip Receives Strong Reviews", "source": "TechCrunch", "sentiment": "bullish"},
-        {"headline": "Apple Supply Chain Faces Challenges in Asia", "source": "Nikkei", "sentiment": "bearish"},
-    ],
-    "TSLA": [
-        {"headline": "Tesla Cybertruck Deliveries Ramp Up Globally", "source": "Electrek", "sentiment": "bullish"},
-        {"headline": "Tesla Stock Volatile After Mixed Q4 Earnings", "source": "MarketWatch", "sentiment": "neutral"},
-        {"headline": "Elon Musk Announces New Tesla Gigafactory Location", "source": "Bloomberg", "sentiment": "bullish"},
-        {"headline": "Tesla FSD v13 Receives Regulatory Approval in More States", "source": "InsideEVs", "sentiment": "bullish"},
-        {"headline": "Competition Intensifies in EV Market From Chinese Rivals", "source": "Reuters", "sentiment": "bearish"},
-        {"headline": "Tesla Energy Storage Business Posts Record Quarter", "source": "CleanTechnica", "sentiment": "bullish"},
-    ],
-    "SPY": [
-        {"headline": "S&P 500 Hits New Record High Amid Strong Earnings Season", "source": "CNBC", "sentiment": "bullish"},
-        {"headline": "Fed Signals Potential Rate Cuts in 2026", "source": "WSJ", "sentiment": "bullish"},
-        {"headline": "Tech Sector Leads Market Rally", "source": "Bloomberg", "sentiment": "bullish"},
-        {"headline": "Inflation Data Comes In Lower Than Expected", "source": "Reuters", "sentiment": "bullish"},
-        {"headline": "Market Volatility Expected Ahead of Jobs Report", "source": "MarketWatch", "sentiment": "neutral"},
-        {"headline": "Corporate Earnings Beat Expectations Across Sectors", "source": "Barron's", "sentiment": "bullish"},
-    ],
-}
-
-def generate_mock_timestamp():
-    """Generate realistic recent timestamps"""
-    now = datetime.now(timezone.utc)
-    offset = timedelta(hours=float(uuid.uuid4().int % 48))
-    return (now - offset).isoformat()
 
 @news_router.get("/feed")
-async def get_news_feed(symbol: Optional[str] = None, limit: int = 20, user=Depends(get_current_user)):
-    """Get latest news feed, optionally filtered by symbol"""
+async def get_news_feed(
+    symbol: Optional[str] = None,
+    sector: Optional[str] = None,
+    category: Optional[str] = None,
+    limit: int = 20,
+    user=Depends(get_current_user)
+):
+    """Get latest news feed - real-time from APIs with fallback"""
+    articles = []
+    
+    try:
+        if symbol:
+            # Fetch news for specific symbol
+            articles = await fetch_news_for_symbol(symbol, limit)
+        elif sector:
+            # Fetch news for sector
+            articles = await fetch_news_for_sector(sector, limit)
+        elif category == "crypto":
+            articles = await fetch_crypto_news(limit)
+        else:
+            # General market news
+            articles = await fetch_market_news(limit)
+    except Exception as e:
+        logger.error(f"News fetch error: {e}")
+    
+    # Use mock news if API fails
+    if not articles:
+        logger.info("Using mock news as fallback")
+        articles = get_mock_news(symbol, limit)
+    
+    # Format response
     news_items = []
+    for article in articles[:limit]:
+        published_at = article.get("published_at", "")
+        if published_at and isinstance(published_at, str):
+            try:
+                # Parse and reformat timestamp
+                dt = datetime.fromisoformat(published_at.replace("Z", "+00:00"))
+                published_at = dt.isoformat()
+            except:
+                published_at = datetime.now(timezone.utc).isoformat()
+        else:
+            published_at = datetime.now(timezone.utc).isoformat()
+        
+        news_items.append({
+            "id": article.get("id", str(uuid.uuid4())),
+            "headline": article.get("title", ""),
+            "description": article.get("description", ""),
+            "source": article.get("source", "Unknown"),
+            "url": article.get("url", "#"),
+            "image": article.get("image"),
+            "symbol": article.get("symbol"),
+            "display_symbol": article.get("display_symbol"),
+            "sector": article.get("sector"),
+            "category": article.get("category", "News"),
+            "timestamp": published_at,
+            "sentiment_hint": article.get("sentiment_hint")
+        })
     
-    symbols = [symbol] if symbol else list(MOCK_NEWS.keys())
-    
-    for sym in symbols:
-        if sym in MOCK_NEWS:
-            for item in MOCK_NEWS[sym]:
-                news_items.append({
-                    "id": str(uuid.uuid4()),
-                    "symbol": sym,
-                    "headline": item["headline"],
-                    "source": item["source"],
-                    "timestamp": generate_mock_timestamp(),
-                    "sentiment_hint": item["sentiment"]
-                })
-    
-    # Sort by timestamp descending and limit
-    news_items.sort(key=lambda x: x["timestamp"], reverse=True)
-    return news_items[:limit]
+    return news_items
+
 
 @news_router.get("/feed/{symbol}")
 async def get_symbol_news(symbol: str, limit: int = 10, user=Depends(get_current_user)):
     """Get news for a specific symbol"""
-    symbol = symbol.upper()
-    if symbol not in MOCK_NEWS:
-        return []
-    
-    news_items = []
-    for item in MOCK_NEWS[symbol][:limit]:
-        news_items.append({
-            "id": str(uuid.uuid4()),
-            "symbol": symbol,
-            "headline": item["headline"],
-            "source": item["source"],
-            "timestamp": generate_mock_timestamp(),
-            "sentiment_hint": item["sentiment"]
-        })
-    
-    return news_items
+    return await get_news_feed(symbol=symbol, limit=limit, user=user)
+
+
+@news_router.get("/sector/{sector}")
+async def get_sector_news(sector: str, limit: int = 10, user=Depends(get_current_user)):
+    """Get news for a specific sector"""
+    return await get_news_feed(sector=sector, limit=limit, user=user)
+
+
+@news_router.get("/market")
+async def get_general_market_news(limit: int = 20, user=Depends(get_current_user)):
+    """Get general market news"""
+    return await get_news_feed(category="market", limit=limit, user=user)
+
+
+@news_router.get("/crypto")
+async def get_cryptocurrency_news(limit: int = 10, user=Depends(get_current_user)):
+    """Get cryptocurrency news"""
+    return await get_news_feed(category="crypto", limit=limit, user=user)
+
 
 @news_router.post("/analyze")
 async def analyze_news_sentiment(req: NewsAnalysisRequest, user=Depends(get_current_user)):
@@ -135,13 +136,14 @@ async def analyze_news_sentiment(req: NewsAnalysisRequest, user=Depends(get_curr
             chat = LlmChat(
                 api_key=EMERGENT_LLM_KEY,
                 session_id=f"sentiment-{uuid.uuid4()}",
-                system_message="""You are an expert financial sentiment analyzer. 
+                system_message="""You are an expert financial sentiment analyzer specializing in Indian and global markets.
 For each headline provided, analyze the market sentiment and return ONLY a JSON array.
 Each object must have exactly these fields:
 - "score": float from -1.0 (extremely bearish) to 1.0 (extremely bullish)
 - "label": exactly one of "Strong Bullish", "Bullish", "Neutral", "Bearish", "Strong Bearish"
 - "confidence": integer from 0-100 representing certainty
 - "key_factors": array of 1-3 key words/phrases that influenced the analysis
+- "market_impact": "high", "medium", or "low"
 
 Return ONLY the JSON array, no other text or explanation."""
             ).with_model("openai", "gpt-5.2")
@@ -166,6 +168,7 @@ Return ONLY the JSON array, no other text or explanation."""
                         "label": item.get("label", "Neutral"),
                         "confidence": int(item.get("confidence", 50)),
                         "key_factors": item.get("key_factors", []),
+                        "market_impact": item.get("market_impact", "medium"),
                         "ai_analyzed": True
                     })
     except Exception as e:
@@ -217,14 +220,30 @@ Return ONLY the JSON array, no other text or explanation."""
         }
     }
 
+
 def _keyword_sentiment_enhanced(headline: str) -> dict:
-    """Enhanced keyword-based sentiment analysis fallback"""
+    """Enhanced keyword-based sentiment analysis with Indian market terms"""
     text = headline.lower()
     
-    strong_positive = ["surge", "soar", "record", "breakthrough", "rally", "boom", "skyrocket"]
-    positive = ["gain", "rise", "growth", "bull", "profit", "strong", "up", "beat", "exceed", "optimistic"]
-    strong_negative = ["crash", "plunge", "collapse", "crisis", "dump", "tank", "plummet"]
-    negative = ["drop", "fall", "bear", "loss", "decline", "weak", "down", "miss", "concern", "fear", "risk"]
+    # Indian market specific terms
+    strong_positive = [
+        "surge", "soar", "record", "breakthrough", "rally", "boom", "skyrocket",
+        "blockbuster", "stellar", "outperform", "beat estimates", "upgrade",
+        "all-time high", "ath", "bullish breakout"
+    ]
+    positive = [
+        "gain", "rise", "growth", "bull", "profit", "strong", "up", "beat", "exceed",
+        "optimistic", "recovery", "rebound", "accumulate", "buy", "outpace",
+        "expansion", "dividend", "bonus", "fii buying"
+    ]
+    strong_negative = [
+        "crash", "plunge", "collapse", "crisis", "dump", "tank", "plummet",
+        "bloodbath", "meltdown", "sell-off", "circuit breaker"
+    ]
+    negative = [
+        "drop", "fall", "bear", "loss", "decline", "weak", "down", "miss", "concern",
+        "fear", "risk", "slowdown", "downgrade", "sell", "fii selling", "outflow"
+    ]
     
     sp = sum(1 for w in strong_positive if w in text) * 2
     p = sum(1 for w in positive if w in text)
@@ -236,31 +255,23 @@ def _keyword_sentiment_enhanced(headline: str) -> dict:
     
     if pos_score > neg_score:
         raw_score = min(0.2 + (pos_score - neg_score) * 0.15, 1.0)
-        if sp > 0:
-            label = "Strong Bullish"
-        else:
-            label = "Bullish"
+        label = "Strong Bullish" if sp > 0 else "Bullish"
         confidence = min(50 + pos_score * 10, 90)
+        impact = "high" if sp > 0 else "medium"
     elif neg_score > pos_score:
         raw_score = max(-0.2 - (neg_score - pos_score) * 0.15, -1.0)
-        if sn > 0:
-            label = "Strong Bearish"
-        else:
-            label = "Bearish"
+        label = "Strong Bearish" if sn > 0 else "Bearish"
         confidence = min(50 + neg_score * 10, 90)
+        impact = "high" if sn > 0 else "medium"
     else:
         raw_score = 0.0
         label = "Neutral"
         confidence = 50
+        impact = "low"
     
     # Extract key factors
     factors = []
-    for w in strong_positive + positive:
-        if w in text:
-            factors.append(w)
-            if len(factors) >= 3:
-                break
-    for w in strong_negative + negative:
+    for w in strong_positive + positive + strong_negative + negative:
         if w in text:
             factors.append(w)
             if len(factors) >= 3:
@@ -272,11 +283,17 @@ def _keyword_sentiment_enhanced(headline: str) -> dict:
         "label": label,
         "confidence": confidence,
         "key_factors": factors[:3],
+        "market_impact": impact,
         "ai_analyzed": False
     }
 
+
 @news_router.get("/sentiment/history")
-async def get_sentiment_history(symbol: Optional[str] = None, limit: int = 50, user=Depends(get_current_user)):
+async def get_sentiment_history(
+    symbol: Optional[str] = None,
+    limit: int = 50,
+    user=Depends(get_current_user)
+):
     """Get historical sentiment analysis results"""
     query = {"user_id": user["id"]}
     if symbol:
@@ -285,8 +302,13 @@ async def get_sentiment_history(symbol: Optional[str] = None, limit: int = 50, u
     results = await db.sentiment_analysis.find(query, {"_id": 0}).sort("analyzed_at", -1).to_list(limit)
     return results
 
+
 @news_router.get("/sentiment/aggregate/{symbol}")
-async def get_symbol_sentiment_aggregate(symbol: str, hours: int = 24, user=Depends(get_current_user)):
+async def get_symbol_sentiment_aggregate(
+    symbol: str,
+    hours: int = 24,
+    user=Depends(get_current_user)
+):
     """Get aggregated sentiment for a symbol over time period"""
     cutoff = datetime.now(timezone.utc) - timedelta(hours=hours)
     
@@ -297,11 +319,11 @@ async def get_symbol_sentiment_aggregate(symbol: str, hours: int = 24, user=Depe
     }, {"_id": 0}).to_list(100)
     
     if not results:
-        # Return mock aggregate if no data
+        # Return default neutral if no data
         return {
             "symbol": symbol.upper(),
             "period_hours": hours,
-            "avg_score": 0.2,  # Slightly bullish default
+            "avg_score": 0.1,  # Slightly positive default
             "label": "Neutral",
             "sample_size": 0,
             "trend": "stable"
@@ -343,3 +365,36 @@ async def get_symbol_sentiment_aggregate(symbol: str, hours: int = 24, user=Depe
         "sample_size": len(results),
         "trend": trend
     }
+
+
+@news_router.get("/trending")
+async def get_trending_topics(user=Depends(get_current_user)):
+    """Get trending market topics"""
+    # Aggregate recent sentiment by symbol
+    recent = await db.sentiment_analysis.find(
+        {"analyzed_at": {"$gte": (datetime.now(timezone.utc) - timedelta(hours=48)).isoformat()}},
+        {"_id": 0}
+    ).to_list(500)
+    
+    symbol_scores = {}
+    for r in recent:
+        symbols = r.get("symbols", [])
+        for sym in symbols:
+            if sym not in symbol_scores:
+                symbol_scores[sym] = {"scores": [], "count": 0}
+            symbol_scores[sym]["scores"].append(r["score"])
+            symbol_scores[sym]["count"] += 1
+    
+    trending = []
+    for sym, data in symbol_scores.items():
+        if data["count"] >= 2:
+            avg = sum(data["scores"]) / len(data["scores"])
+            trending.append({
+                "symbol": sym,
+                "avg_sentiment": round(avg, 3),
+                "mentions": data["count"],
+                "trend": "bullish" if avg > 0.2 else "bearish" if avg < -0.2 else "neutral"
+            })
+    
+    trending.sort(key=lambda x: x["mentions"], reverse=True)
+    return trending[:10]
