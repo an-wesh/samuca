@@ -10,6 +10,7 @@ import ChartTerminalPage from "@/pages/ChartTerminalPage";
 import BacktestLabPage from "@/pages/BacktestLabPage";
 import PaperTradingPage from "@/pages/PaperTradingPage";
 import BotManagementPage from "@/pages/BotManagementPage";
+import DeploymentsPage from "@/pages/DeploymentsPage";
 
 function ProtectedRoute({ children }) {
   const token = useAuthStore((s) => s.token);
