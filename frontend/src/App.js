@@ -11,6 +11,7 @@ import BacktestLabPage from "@/pages/BacktestLabPage";
 import PaperTradingPage from "@/pages/PaperTradingPage";
 import BotManagementPage from "@/pages/BotManagementPage";
 import DeploymentsPage from "@/pages/DeploymentsPage";
+import NewsSentimentPage from "@/pages/NewsSentimentPage";
 
 function ProtectedRoute({ children }) {
   const token = useAuthStore((s) => s.token);
