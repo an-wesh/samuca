@@ -5,7 +5,7 @@ import time
 from datetime import datetime
 
 class TradingBotAPITester:
-    def __init__(self, base_url="https://ai-trading-bot-34.preview.emergentagent.com"):
+    def __init__(self, base_url="https://strategy-builder-27.preview.emergentagent.com"):
         self.base_url = base_url
         self.token = None
         self.test_user = {"email": "test@demo.com", "password": "Test1234!"}

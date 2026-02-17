@@ -1,84 +1,189 @@
 <analysis>**original_problem_statement:**
-The user wants to build a production-grade, AI-powered trading bot builder platform. The project started with a comprehensive set of requirements, which were then refined to adapt to the available tech stack (React, FastAPI, MongoDB). After the initial MVP was built, the user provided a significantly expanded scope, turning the project from an MVP into a full-featured platform.
-
-The core requirements are now to:
-1.  **Upgrade the Backtesting Engine:** Implement an institutional-grade, candle-by-candle simulation with realistic costs, advanced performance metrics, and rich UI visualizations.
-2.  **Build a Deployment Pipeline:** Create a seamless flow to deploy a backtested strategy into the paper trading environment for live simulation.
-3.  **Simplify Bot Creation:** Overhaul the UX with three modes: pre-built templates, an enhanced visual drag-and-drop builder, and an AI-powered generator that creates strategies from natural language prompts.
-4.  **Integrate News & Sentiment:** Implement a real-time news feed and use an LLM (via Emergent Key) to generate sentiment scores that can be used as signals in trading strategies.
-5.  **Add a Machine Learning Lab:** Allow users to build bots using ML models like XGBoost and LSTMs, with modes for AutoML, guided, and advanced users.
-6.  **Create an Admin Terminal:** Build a comprehensive dashboard for administrators to manage users, allocate virtual capital, monitor platform activity, and enforce risk controls.
-
-The final product should be a robust, professional-grade platform that exceeds the capabilities of existing tools like Streak.
+The user wants to build a production-grade, AI-powered trading bot builder platform. The initial MVP was expanded to include a full-featured platform with the following core requirements:
+1.  **Upgrade the Backtesting Engine:** Implement an institutional-grade, candle-by-candle simulation with realistic costs, advanced performance metrics, and rich UI visualizations. Use all technical indicators available on Zerodha Kite.
+2.  **Build a Deployment Pipeline:** Create a seamless flow to deploy a backtested strategy into the paper trading environment.
+3.  **Simplify Bot Creation:** Overhaul the UX with pre-built templates, an enhanced visual builder, and an AI-powered generator.
+4.  **Integrate News & Sentiment:** Implement a real-time news feed (using a reliable API) and use an LLM to generate sentiment scores.
+5.  **Add a Machine Learning Lab (P4):** Allow users to build bots using ML models. The implementation should include a full pipeline for data processing, training, evaluation, and pre-trained templates for ease of use.
+6.  **Create an Admin Terminal (P5):** Build a comprehensive dashboard for administrators to manage users, allocate virtual capital, monitor platform activity, and enforce risk controls.
+7.  **Market Data:** Integrate all stocks listed on the NSE. Provide real-time price updates and historical data for the past 30 days. Live exchange integration for trading is explicitly out of scope.
 
 **User's preferred language**: English
 
 **what currently exists?**
-A functional MVP of the AI Trading Bot Builder has been successfully built.
--   **Backend (FastAPI):** A server is running with JWT authentication (signup/login), CRUD endpoints for bots, and WebSocket streaming for mock market data. It includes stubs for backtesting, paper trading, and AI services.
--   **Frontend (React):** A complete UI with a dark-mode, institutional theme is in place. It includes pages for Login, Dashboard, a Chart Terminal (using TradingView Lightweight Charts), a visual Bot Builder, a Backtest Lab, and a Paper Trading terminal.
--   **Database (MongoDB):** A connection is established, and the  collection is in use.
-The basic end-to-end flow of logging in, viewing the dashboard, and accessing the different sections of the application is working.
+The agent has successfully implemented the first set of major feature upgrades (P0, P1, P2, P3) on top of the initial MVP.
+-   **P0 (Backtesting):** The backend engine has been upgraded to an institutional-grade, candle-by-candle simulator with extensive technical indicators and performance metrics. The frontend UI has been updated to support this.
+-   **P1 (Deployment Pipeline):** A backend service and frontend page for deploying strategies to paper trading are complete.
+-   **P2 (Bot Builder):** The UI has been enhanced with the new technical indicators.
+-   **P3 (News & Sentiment):** A backend service and frontend page for news and sentiment analysis are in place. However, the sentiment analysis is currently using a keyword-based fallback because the Emergent LLM key budget was exceeded.
+-   **P4 & P5 (ML Lab & Admin Panel):** The agent has created the basic file structure for these features on both the frontend and backend, but they are not yet integrated or functional. Services for real market data () and news () have also been created but are not fully wired up.
 
 **Last working item**:
--   **Last item agent was working:** The agent completed the initial end-to-end build of the MVP application. This included creating over 25 files for the frontend and backend, debugging a  parsing issue, fixing a chart localization error, and resolving a JSON serialization bug in the backtest endpoint. The agent verified that all main pages were loading and functional.
--   **Status:** USER VERIFICATION PENDING
--   **Agent Testing Done:** Y
+-   **Last item agent was working:** The agent was creating the foundational files for the Machine Learning Bot Builder (P4) and the Admin Terminal (P5). The very last action was creating the frontend page for the Admin Terminal.
+-   **Status:** IN PROGRESS
+-   **Agent Testing Done:** N
 -   **Which testing method agent to use?** both
 -   **User Testing Done:** N
 
 **All Pending/In progress Issue list**:
-There are no pending bugs from the previous session. The following work consists of entirely new feature requests from the user, which are prioritized below.
+-   **Issue 1: Emergent LLM Key Budget Exceeded (P0 - HIGHEST PRIORITY)**
+    -   **Description:** The AI-powered sentiment analysis feature (part of P3) is not working as intended. The backend logs show the , causing the system to use a simple keyword-based fallback. This degrades a core feature.
+    -   **Next debug checklist:**
+        1.  Inform the user that the Emergent LLM Key budget is exhausted and they need to add a balance in their profile.
+        2.  Once the user confirms the key is funded, re-test the  endpoint.
+    -   **Why fix this issue and what will be achieved with the fix?** To restore the AI-powered sentiment analysis, a key requirement for the news integration feature.
+    -   **Status:** BLOCKED (on user action)
+    -   **Is recurring issue?** N
+    -   **Should Test backend/backend/both after fix?** Backend.
 
 **In progress Task List**:
-No tasks are currently in progress. The previous phase was completed.
+-   **Task 1: Complete P4 (ML Bot Builder) & P5 (Admin Terminal) Implementation (P0)**
+    -   **Where to resume:** The agent has created the necessary files but has not integrated them. The next steps are:
+        1.  Install new backend dependencies: Looking in indexes: https://pypi.org/simple, https://d33sy5i8bnduwe.cloudfront.net/simple/
+Requirement already satisfied: yfinance in /root/.venv/lib/python3.11/site-packages (1.2.0)
+Collecting newsapi-python
+  Downloading newsapi_python-0.2.7-py2.py3-none-any.whl.metadata (1.2 kB)
+Requirement already satisfied: scikit-learn in /root/.venv/lib/python3.11/site-packages (1.8.0)
+Requirement already satisfied: xgboost in /root/.venv/lib/python3.11/site-packages (3.2.0)
+Collecting tensorflow
+  Downloading tensorflow-2.20.0-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl.metadata (4.5 kB)
+Requirement already satisfied: pandas in /root/.venv/lib/python3.11/site-packages (3.0.0)
+Requirement already satisfied: numpy>=1.16.5 in /root/.venv/lib/python3.11/site-packages (from yfinance) (2.4.2)
+Requirement already satisfied: requests>=2.31 in /root/.venv/lib/python3.11/site-packages (from yfinance) (2.32.5)
+Requirement already satisfied: multitasking>=0.0.7 in /root/.venv/lib/python3.11/site-packages (from yfinance) (0.0.12)
+Requirement already satisfied: platformdirs>=2.0.0 in /root/.venv/lib/python3.11/site-packages (from yfinance) (4.5.1)
+Requirement already satisfied: pytz>=2022.5 in /root/.venv/lib/python3.11/site-packages (from yfinance) (2025.2)
+Requirement already satisfied: frozendict>=2.3.4 in /root/.venv/lib/python3.11/site-packages (from yfinance) (2.4.7)
+Requirement already satisfied: peewee>=3.16.2 in /root/.venv/lib/python3.11/site-packages (from yfinance) (3.19.0)
+Requirement already satisfied: beautifulsoup4>=4.11.1 in /root/.venv/lib/python3.11/site-packages (from yfinance) (4.14.3)
+Requirement already satisfied: curl_cffi<0.14,>=0.7 in /root/.venv/lib/python3.11/site-packages (from yfinance) (0.13.0)
+Requirement already satisfied: protobuf>=3.19.0 in /root/.venv/lib/python3.11/site-packages (from yfinance) (5.29.6)
+Requirement already satisfied: websockets>=13.0 in /root/.venv/lib/python3.11/site-packages (from yfinance) (15.0.1)
+Requirement already satisfied: cffi>=1.12.0 in /root/.venv/lib/python3.11/site-packages (from curl_cffi<0.14,>=0.7->yfinance) (2.0.0)
+Requirement already satisfied: certifi>=2024.2.2 in /root/.venv/lib/python3.11/site-packages (from curl_cffi<0.14,>=0.7->yfinance) (2026.1.4)
+Requirement already satisfied: charset_normalizer<4,>=2 in /root/.venv/lib/python3.11/site-packages (from requests>=2.31->yfinance) (3.4.4)
+Requirement already satisfied: idna<4,>=2.5 in /root/.venv/lib/python3.11/site-packages (from requests>=2.31->yfinance) (3.11)
+Requirement already satisfied: urllib3<3,>=1.21.1 in /root/.venv/lib/python3.11/site-packages (from requests>=2.31->yfinance) (2.6.3)
+Requirement already satisfied: scipy>=1.10.0 in /root/.venv/lib/python3.11/site-packages (from scikit-learn) (1.17.0)
+Requirement already satisfied: joblib>=1.3.0 in /root/.venv/lib/python3.11/site-packages (from scikit-learn) (1.5.3)
+Requirement already satisfied: threadpoolctl>=3.2.0 in /root/.venv/lib/python3.11/site-packages (from scikit-learn) (3.6.0)
+Requirement already satisfied: nvidia-nccl-cu12 in /root/.venv/lib/python3.11/site-packages (from xgboost) (2.29.3)
+Collecting absl-py>=1.0.0 (from tensorflow)
+  Downloading absl_py-2.4.0-py3-none-any.whl.metadata (3.3 kB)
+Collecting astunparse>=1.6.0 (from tensorflow)
+  Downloading astunparse-1.6.3-py2.py3-none-any.whl.metadata (4.4 kB)
+Collecting flatbuffers>=24.3.25 (from tensorflow)
+  Downloading flatbuffers-25.12.19-py2.py3-none-any.whl.metadata (1.0 kB)
+Collecting gast!=0.5.0,!=0.5.1,!=0.5.2,>=0.2.1 (from tensorflow)
+  Downloading gast-0.7.0-py3-none-any.whl.metadata (1.5 kB)
+Collecting google_pasta>=0.1.1 (from tensorflow)
+  Downloading google_pasta-0.2.0-py3-none-any.whl.metadata (814 bytes)
+Collecting libclang>=13.0.0 (from tensorflow)
+  Downloading libclang-18.1.1-py2.py3-none-manylinux2014_aarch64.whl.metadata (5.2 kB)
+Collecting opt_einsum>=2.3.2 (from tensorflow)
+  Downloading opt_einsum-3.4.0-py3-none-any.whl.metadata (6.3 kB)
+Requirement already satisfied: packaging in /root/.venv/lib/python3.11/site-packages (from tensorflow) (26.0)
+Collecting setuptools (from tensorflow)
+  Using cached setuptools-82.0.0-py3-none-any.whl.metadata (6.6 kB)
+Requirement already satisfied: six>=1.12.0 in /root/.venv/lib/python3.11/site-packages (from tensorflow) (1.17.0)
+Collecting termcolor>=1.1.0 (from tensorflow)
+  Downloading termcolor-3.3.0-py3-none-any.whl.metadata (6.5 kB)
+Requirement already satisfied: typing_extensions>=3.6.6 in /root/.venv/lib/python3.11/site-packages (from tensorflow) (4.15.0)
+Collecting wrapt>=1.11.0 (from tensorflow)
+  Downloading wrapt-2.1.1-cp311-cp311-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl.metadata (7.4 kB)
+Requirement already satisfied: grpcio<2.0,>=1.24.3 in /root/.venv/lib/python3.11/site-packages (from tensorflow) (1.76.0)
+Collecting tensorboard~=2.20.0 (from tensorflow)
+  Downloading tensorboard-2.20.0-py3-none-any.whl.metadata (1.8 kB)
+Collecting keras>=3.10.0 (from tensorflow)
+  Downloading keras-3.13.2-py3-none-any.whl.metadata (6.3 kB)
+Collecting h5py>=3.11.0 (from tensorflow)
+  Downloading h5py-3.15.1-cp311-cp311-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl.metadata (3.0 kB)
+Collecting ml_dtypes<1.0.0,>=0.5.1 (from tensorflow)
+  Downloading ml_dtypes-0.5.4-cp311-cp311-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl.metadata (8.9 kB)
+Collecting markdown>=2.6.8 (from tensorboard~=2.20.0->tensorflow)
+  Downloading markdown-3.10.2-py3-none-any.whl.metadata (5.1 kB)
+Requirement already satisfied: pillow in /root/.venv/lib/python3.11/site-packages (from tensorboard~=2.20.0->tensorflow) (12.1.0)
+Collecting tensorboard-data-server<0.8.0,>=0.7.0 (from tensorboard~=2.20.0->tensorflow)
+  Downloading tensorboard_data_server-0.7.2-py3-none-any.whl.metadata (1.1 kB)
+Collecting werkzeug>=1.0.1 (from tensorboard~=2.20.0->tensorflow)
+  Downloading werkzeug-3.1.5-py3-none-any.whl.metadata (4.0 kB)
+Requirement already satisfied: python-dateutil>=2.8.2 in /root/.venv/lib/python3.11/site-packages (from pandas) (2.9.0.post0)
+Collecting wheel<1.0,>=0.23.0 (from astunparse>=1.6.0->tensorflow)
+  Downloading wheel-0.46.3-py3-none-any.whl.metadata (2.4 kB)
+Requirement already satisfied: soupsieve>=1.6.1 in /root/.venv/lib/python3.11/site-packages (from beautifulsoup4>=4.11.1->yfinance) (2.8.3)
+Requirement already satisfied: pycparser in /root/.venv/lib/python3.11/site-packages (from cffi>=1.12.0->curl_cffi<0.14,>=0.7->yfinance) (3.0)
+Requirement already satisfied: rich in /root/.venv/lib/python3.11/site-packages (from keras>=3.10.0->tensorflow) (14.3.2)
+Collecting namex (from keras>=3.10.0->tensorflow)
+  Downloading namex-0.1.0-py3-none-any.whl.metadata (322 bytes)
+Collecting optree (from keras>=3.10.0->tensorflow)
+  Downloading optree-0.18.0-cp311-cp311-manylinux_2_26_aarch64.manylinux_2_28_aarch64.whl.metadata (34 kB)
+Requirement already satisfied: markupsafe>=2.1.1 in /root/.venv/lib/python3.11/site-packages (from werkzeug>=1.0.1->tensorboard~=2.20.0->tensorflow) (3.0.3)
+Requirement already satisfied: markdown-it-py>=2.2.0 in /root/.venv/lib/python3.11/site-packages (from rich->keras>=3.10.0->tensorflow) (4.0.0)
+Requirement already satisfied: pygments<3.0.0,>=2.13.0 in /root/.venv/lib/python3.11/site-packages (from rich->keras>=3.10.0->tensorflow) (2.19.2)
+Requirement already satisfied: mdurl~=0.1 in /root/.venv/lib/python3.11/site-packages (from markdown-it-py>=2.2.0->rich->keras>=3.10.0->tensorflow) (0.1.2)
+Downloading newsapi_python-0.2.7-py2.py3-none-any.whl (7.9 kB)
+Downloading tensorflow-2.20.0-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl (259.5 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 259.5/259.5 MB 53.3 MB/s  0:00:04
+Downloading ml_dtypes-0.5.4-cp311-cp311-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl (5.1 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 5.1/5.1 MB 104.9 MB/s  0:00:00
+Downloading tensorboard-2.20.0-py3-none-any.whl (5.5 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 5.5/5.5 MB 110.5 MB/s  0:00:00
+Downloading tensorboard_data_server-0.7.2-py3-none-any.whl (2.4 kB)
+Downloading absl_py-2.4.0-py3-none-any.whl (135 kB)
+Downloading astunparse-1.6.3-py2.py3-none-any.whl (12 kB)
+Downloading wheel-0.46.3-py3-none-any.whl (30 kB)
+Downloading flatbuffers-25.12.19-py2.py3-none-any.whl (26 kB)
+Downloading gast-0.7.0-py3-none-any.whl (22 kB)
+Downloading google_pasta-0.2.0-py3-none-any.whl (57 kB)
+Downloading h5py-3.15.1-cp311-cp311-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl (4.5 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.5/4.5 MB 62.0 MB/s  0:00:00
+Downloading keras-3.13.2-py3-none-any.whl (1.5 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.5/1.5 MB 134.2 MB/s  0:00:00
+Downloading libclang-18.1.1-py2.py3-none-manylinux2014_aarch64.whl (23.8 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 23.8/23.8 MB 75.9 MB/s  0:00:00
+Downloading markdown-3.10.2-py3-none-any.whl (108 kB)
+Downloading opt_einsum-3.4.0-py3-none-any.whl (71 kB)
+Using cached setuptools-82.0.0-py3-none-any.whl (1.0 MB)
+Downloading termcolor-3.3.0-py3-none-any.whl (7.7 kB)
+Downloading werkzeug-3.1.5-py3-none-any.whl (225 kB)
+Downloading wrapt-2.1.1-cp311-cp311-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (115 kB)
+Downloading namex-0.1.0-py3-none-any.whl (5.9 kB)
+Downloading optree-0.18.0-cp311-cp311-manylinux_2_26_aarch64.manylinux_2_28_aarch64.whl (361 kB)
+Installing collected packages: namex, libclang, flatbuffers, wrapt, wheel, werkzeug, termcolor, tensorboard-data-server, setuptools, optree, opt_einsum, ml_dtypes, markdown, h5py, google_pasta, gast, absl-py, tensorboard, newsapi-python, astunparse, keras, tensorflow
+
+Successfully installed absl-py-2.4.0 astunparse-1.6.3 flatbuffers-25.12.19 gast-0.7.0 google_pasta-0.2.0 h5py-3.15.1 keras-3.13.2 libclang-18.1.1 markdown-3.10.2 ml_dtypes-0.5.4 namex-0.1.0 newsapi-python-0.2.7 opt_einsum-3.4.0 optree-0.18.0 setuptools-82.0.0 tensorboard-2.20.0 tensorboard-data-server-0.7.2 tensorflow-2.20.0 termcolor-3.3.0 werkzeug-3.1.5 wheel-0.46.3 wrapt-2.1.1.
+        2.  Update  to include the new routers for the ML builder and Admin panel.
+        3.  Update  to add routes for the new  and  pages.
+        4.  Update  to add navigation links to these new pages.
+        5.  Restart services and begin testing.
+    -   **What will be achieved with this?** A functional ML Bot Builder and Admin Terminal, fulfilling the user's core requirements.
+    -   **Status:** IN PROGRESS
+    -   **Should Test frontend/backend/both after fix?** Both.
 
 **Upcoming and Future Tasks**
-The user has defined a new, multi-phase project to enhance the existing MVP.
-
-**Upcoming Tasks (Core Enhancements):**
--   **P0: Backtesting Engine - Full Upgrade:**
-    -   **Where to resume:** Refactor the backtesting logic in  and the endpoint in .
-    -   **What will be achieved:** Replace the current basic backtest with a full candle-by-candle simulation, including transaction costs and slippage. It will produce institutional-grade metrics (Sharpe, Sortino, Max Drawdown) and visualizations.
+**Upcoming Tasks:**
+-   **P0: Integrate Real Market & News Data:**
+    -   **Description:** Replace the mock data generators with the newly created real-data services.
+    -   **Files:**
+        -   Modify  to use  (yfinance) instead of .
+        -   Modify  to use  (newsapi-python) for the news feed.
+    -   **Status:** NOT STARTED
+-   **P1: Add All NSE Stocks:**
+    -   **Description:** The  uses a hardcoded list of symbols. This needs to be replaced with a dynamic or comprehensive list of all 200+ NSE stocks requested by the user.
     -   **Status:** NOT STARTED
 
--   **P1: Strategy-to-Paper-Trading Deployment Pipeline:**
-    -   **Where to resume:** Add a Deploy button in  and create a new backend service to manage active bots.
-    -   **What will be achieved:** A one-click flow for users to take a validated strategy and deploy it for live simulation in the paper trading environment.
-    -   **Status:** NOT STARTED
-
--   **P2: Advanced Bot Creation UX:**
-    -   **Where to resume:** Overhaul the UI and logic in . Implement LLM logic in .
-    -   **What will be achieved:** A simplified yet powerful bot creation experience with pre-built templates, an upgraded visual builder, and an AI assistant that can generate strategies from text prompts.
-    -   **Status:** NOT STARTED
-
--   **P3: News Feed & Sentiment Engine:**
-    -   **Where to resume:** Create a new News component for the  page. Implement the sentiment analysis pipeline in .
-    -   **What will be achieved:** An integrated news terminal and a sentiment analysis pipeline that allows bots to use news sentiment as a trading signal.
-    -   **Status:** NOT STARTED
-
-**Future Tasks (Platform Expansion):**
--   **P4: Machine Learning Bot Builder:**
-    -   **Where to resume:** Create a new AI Bot Lab page and corresponding backend services for model training and inference.
-    -   **What will be achieved:** A new platform vertical allowing users to create trading bots using machine learning models.
-    -   **Status:** NOT STARTED
-
--   **P5: Admin Terminal:**
-    -   **Where to resume:** Create new admin-only routes and components for the frontend and backend, including RBAC middleware.
-    -   **What will be achieved:** A complete control center for platform administrators to manage users, capital, and risk.
-    -   **Status:** NOT STARTED
+**Future Tasks:**
+-   No future tasks have been defined beyond the current scope (P0-P5). Live trading is explicitly not required.
 
 **Completed work in this session**
--   **Initial Platform Scaffolding (DONE):**
-    -   JWT Authentication system (, ).
-    -   Mock Market Data service with WebSocket streaming ().
-    -   Chart Terminal with TradingView Lightweight Charts ().
-    -   Basic Backtesting Endpoint ().
-    -   UI Shells for all key pages (Dashboard, Bot Builder, Paper Trading, etc.).
-    -   Zustand state management and Axios API client setup.
+-   **Backtesting Engine Upgrade (DONE):** Refactored  and  for candle-by-candle simulation and institutional metrics. Updated .
+-   **Strategy-to-Paper-Trading Deployment Pipeline (DONE):** Created  and .
+-   **Advanced Bot Builder UX (DONE):** Updated  with new indicators.
+-   **News Feed & Sentiment Engine (DONE - PARTIALLY):** Created  and . The core sentiment analysis is degraded due to a key budget issue.
+-   **File Scaffolding (DONE):** Created all necessary files for P4 (ML Bot Builder) and P5 (Admin Terminal).
 
 **Earlier issues found/mentioned but not fixed**
--   None. All identified issues during the initial build were resolved.
+-   The **Emergent LLM Key budget issue** was identified by the agent, but it was not resolved. The agent noted the fallback was working and moved on. This is now the highest priority pending issue.
 
 **Known issue recurrence from previous fork**
 -   N/A
@@ -90,60 +195,83 @@ The user has defined a new, multi-phase project to enhance the existing MVP.
 -   **Frontend:** React, TailwindCSS, ShadCN UI, Zustand, TradingView Lightweight Charts
 -   **Backend:** FastAPI, Python, WebSockets
 -   **Database:** MongoDB
--   **Authentication:** JSON Web Tokens (JWT)
--   **AI/ML:** OpenAI GPT via Emergent LLM Key (planned for sentiment and AI bot generation)
+-   **Authentication:** JWT
+-   **Data/ML:** , , , , , 
+-   **AI:** OpenAI GPT via Emergent LLM Key
 
 **key DB schema**
 -   **users:** 
--   **bots:** (Implicitly required) 
--   **market_data_granularity:** (Planned) 
+-   **bots:** 
+-   **deployments:** 
+-   **ml_models:** 
+
+**changes in tech stack**
+-   Added , , , , , and  to the backend stack.
 
 **All files of reference**
--   **Backend:** , , , 
--   **Frontend:** , , , 
--   The project consists of all files created during the initial scaffolding, as listed in the architecture tree.
+-   **Created:**
+    -   , , , 
+    -   , , 
+    -   , , , 
+-   **Updated:**
+    -   , , , 
+    -   , , , , 
 
 **Areas that need refactoring**:
--   The backtesting logic in  is currently synchronous and part of the main API request. This must be refactored into an asynchronous background task to handle the new, compute-intensive backtesting requirements without timing out.
--   The  file should be split into separate modules for the indicator engine, backtesting engine, and the upcoming paper trading execution engine for better separation of concerns.
+-    is becoming a monolith for route inclusions. Consider creating a dedicated  in the  directory to aggregate all routers before they are included in the main app.
+-   The new services in  should be moved to a dedicated  directory for better organization.
 
 **key api endpoints**
 -   
 -   
 -   
 -   
--    (WebSocket for live data)
+-   
+-   
+-   
+-   
 
 **Critical Info for New Agent**
--   **Scope Shift:** The project has moved from a simple MVP to a full-featured platform. Do not underestimate the scope of the new requirements. The work is just beginning.
--   **Tech Stack:** Strictly adhere to the established stack: **React, FastAPI, MongoDB**. Do not introduce PostgreSQL, Next.js, or other technologies from the original (now obsolete) problem statement.
--   **AI Integration:** All AI features (sentiment analysis, AI bot generator) **must** use the OpenAI GPT model via the Emergent LLM Key. Do not attempt to implement local models like FinBERT.
--   **Backtesting is P0:** The highest priority is the full upgrade of the backtesting engine. This is a complex task requiring a move to asynchronous processing.
--   **Follow Design:** The user has a strong vision for a professional, dark-themed institutional terminal UI. Adhere closely to the provided design guidelines and the existing aesthetic.
+-   **PRIORITY 1: Unblock the user.** The implementation of P4 and P5 is half-done. Your first task is to finish it by installing dependencies and wiring up the routes on both the frontend and backend.
+-   **PRIORITY 2: Inform the user.** The AI sentiment analysis feature is broken due to an exhausted Emergent LLM key budget. You must inform the user about this and tell them to add balance to their key. Do not proceed with fixing other AI-related issues until this is resolved.
+-   **Real Data Integration:** Services for real market data () and news () have been created but are not yet used by the API endpoints. After completing P4/P5, your next task is to replace the mock data generators with these real services.
 
 **documents and test reports created in this job**
 -   
 -   
--   
 
 **Last 10 User Messages and any pending HUMAN messages**
-- The user's most recent message provided a massive list of new feature requirements, effectively defining the entire next phase of the project. It details the upgrades for the backtesting engine, the strategy deployment pipeline, the advanced bot builder, the news/sentiment engine, a new ML bot builder, and a comprehensive admin terminal. The user has made it clear that this is no longer an MVP but a full product build.
+1.  **User:** Approved plan to work on P0-P3, selecting whichever works best for indicators.
+2.  **Agent:** Completed P0-P3, including backtesting, deployment, and news/sentiment features. Ran tests and finished.
+3.  **User:** Provided new, extensive requirements: add all NSE stocks, continue with P4 (ML Lab) and P5 (Admin Panel), and integrate a real news API. Explicitly stated not to add live trading.
+4.  **User:** Provided detailed choices for the new requirements: ensure stock prices update and 30-day historical data is available; for news, use the best combination of APIs for reliability; for the ML lab, provide a full pipeline with pre-trained templates; for the admin panel, give full user management control.
+5.  **Agent:** Acknowledged the new requirements and began implementation, creating numerous files for the new features.
 
 **Project Health Check:**
--   **Working:** The foundational MVP is functional.
--   **Mocked:** Market data, AI/Sentiment analysis, and parts of the paper trading logic are currently mocked or stubbed out.
+-   **Broken:**
+    -   AI Sentiment Analysis () due to LLM key budget.
+    -   ML Bot Builder (P4) feature is incomplete.
+    -   Admin Terminal (P5) feature is incomplete.
+-   **Mocked:**
+    -   Market data for charts and backtesting is still using the mock generator.
+    -   The news feed is mocked, though a service for a real API exists.
 
 **3rd Party Integrations**
--   **OpenAI GPT:** Uses Emergent LLM Key (to be implemented for sentiment/AI features).
--   **TradingView Lightweight Charts:** v5.1.0, already integrated and working.
+-   **OpenAI GPT:** Uses Emergent LLM Key (budget exhausted).
+-   **TradingView Lightweight Charts:** v5.1.0 (Integrated).
+-   **yfinance:** To be integrated for market data.
+-   **newsapi-python:** To be integrated for news feeds.
+-   **scikit-learn, xgboost, tensorflow:** To be integrated for the ML Bot Builder.
 
 **Testing status**
--   **Testing agent used after significant changes:** YES (used once after initial MVP build).
+-   **Testing agent used after significant changes:** YES (after completing P0-P3).
 -   **Test files created:** None.
--   **Known regressions:** None.
+-   **Known regressions:** The sentiment analysis feature has regressed to a non-AI fallback.
 
 **Credentials to test flow:**
-New users can be created via the signup page with any email and password combination.
+New users can be created via the signup page with any email and password. A test user  with password  may exist.
 
 **What agent forgot to execute**
-The agent successfully completed the initial MVP as planned. The new user requirements were provided *after* this completion, so nothing was forgotten, but the project's scope has been fundamentally expanded.</analysis>
+-   The agent did not complete the implementation of P4 and P5. It created files but failed to install dependencies, update routing in  and , or restart and test the services.
+-   The agent did not resolve the LLM Key Budget Exceeded issue, leaving a core feature in a degraded state.
+-   The agent did not replace the mock data services with the newly created real-data services.</analysis>
