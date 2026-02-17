@@ -69,12 +69,14 @@ from routes.bots import bots_router
 from routes.backtest import backtest_router
 from routes.paper_trading import paper_router
 from routes.ai_services import ai_router
+from routes.deployment import deploy_router
 
 app.include_router(market_router)
 app.include_router(bots_router)
 app.include_router(backtest_router)
 app.include_router(paper_router)
 app.include_router(ai_router)
+app.include_router(deploy_router)
 
 app.add_middleware(
     CORSMiddleware,
