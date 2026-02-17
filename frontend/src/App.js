@@ -12,6 +12,8 @@ import PaperTradingPage from "@/pages/PaperTradingPage";
 import BotManagementPage from "@/pages/BotManagementPage";
 import DeploymentsPage from "@/pages/DeploymentsPage";
 import NewsSentimentPage from "@/pages/NewsSentimentPage";
+import MLBotBuilderPage from "@/pages/MLBotBuilderPage";
+import AdminTerminalPage from "@/pages/AdminTerminalPage";
 
 function ProtectedRoute({ children }) {
   const token = useAuthStore((s) => s.token);
@@ -33,6 +35,8 @@ function App() {
         <Route path="/bots" element={<ProtectedRoute><BotManagementPage /></ProtectedRoute>} />
         <Route path="/deploy" element={<ProtectedRoute><DeploymentsPage /></ProtectedRoute>} />
         <Route path="/news" element={<ProtectedRoute><NewsSentimentPage /></ProtectedRoute>} />
+        <Route path="/ml-builder" element={<ProtectedRoute><MLBotBuilderPage /></ProtectedRoute>} />
+        <Route path="/admin" element={<ProtectedRoute><AdminTerminalPage /></ProtectedRoute>} />
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
