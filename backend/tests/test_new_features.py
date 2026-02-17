@@ -446,9 +446,14 @@ class TestMarketData(TestSetup):
         response = auth_session.get(f"{BASE_URL}/api/market/symbols")
         assert response.status_code == 200
         data = response.json()
-        assert isinstance(data, list)
-        print(f"✓ Retrieved {len(data)} symbols")
-        return data
+        # API returns dict with symbols and timeframes
+        if isinstance(data, dict):
+            symbols = data.get("symbols", [])
+            assert len(symbols) > 0
+            print(f"✓ Retrieved {len(symbols)} symbols: {symbols}")
+        else:
+            assert isinstance(data, list)
+            print(f"✓ Retrieved {len(data)} symbols")
 
 
 # Run all tests
