@@ -58,7 +58,7 @@ export default function Sidebar() {
                   {user.name?.[0]?.toUpperCase() || "U"}
                 </div>
               </TooltipTrigger>
-              <TooltipContent side="right" className="bg-[#111] border-[#333] text-xs">{user.name || user.email}</TooltipContent>
+              <TooltipContent side="right" className="bg-[#111] border-[#333] text-xs text-white">{user.name || user.email}</TooltipContent>
             </Tooltip>
           )}
           <Tooltip>
