@@ -132,7 +132,7 @@ async def analyze_news_sentiment(req: NewsAnalysisRequest, user=Depends(get_curr
     results = []
     
     # Try HuggingFace free inference API (no API key needed)
-    HF_API_URL = "https://api-inference.huggingface.co/models/ProsusAI/finbert"
+    HF_API_URL = "https://router.huggingface.co/hf-inference/models/ProsusAI/finbert"
     
     async with aiohttp.ClientSession() as session:
         for headline in req.headlines:
