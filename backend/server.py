@@ -93,6 +93,11 @@ app.include_router(news_router)
 app.include_router(ml_router)
 app.include_router(admin_router)
 
+# Health check endpoint for Render
+@app.get("/health")
+async def health_check():
+    return {"status": "healthy", "service": "trading-bot-api"}
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
