@@ -132,52 +132,77 @@ async def analyze_news_sentiment(req: NewsAnalysisRequest, user=Depends(get_curr
     results = []
     
     # Try HuggingFace free inference API (no API key needed)
-    try:
-        HF_API_URL = "https://api-inference.huggingface.co/models/ProsusAI/finbert"
-        
-        async with aiohttp.ClientSession() as session:
-            for headline in req.headlines:
+    HF_API_URL = "https://api-inference.huggingface.co/models/ProsusAI/finbert"
+    
+    async with aiohttp.ClientSession() as session:
+        for headline in req.headlines:
+            ai_result = None
+            
+            # Try up to 2 times (model may need to wake up)
+            for attempt in range(2):
                 try:
                     async with session.post(
                         HF_API_URL,
                         headers={"Content-Type": "application/json"},
                         json={"inputs": headline},
-                        timeout=15
+                        timeout=aiohttp.ClientTimeout(total=20)
                     ) as response:
                         if response.status == 200:
                             data = await response.json()
                             
-                            # FinBERT returns: [{"label": "positive/negative/neutral", "score": 0.xx}]
+                            # FinBERT returns: [[{"label": "positive/negative/neutral", "score": 0.xx}]]
                             if isinstance(data, list) and len(data) > 0:
                                 # Handle nested list format
                                 sentiments = data[0] if isinstance(data[0], list) else data
                                 
-                                # Find the highest scoring sentiment
-                                best_sentiment = max(sentiments, key=lambda x: x.get("score", 0))
-                                label = best_sentiment.get("label", "neutral").lower()
-                                confidence = int(best_sentiment.get("score", 0.5) * 100)
-                                
-                                # Convert to score (-1 to 1)
-                                if label == "positive":
-                                    score = best_sentiment.get("score", 0.5)
-                                    display_label = "Bullish" if score > 0.7 else "Slightly Bullish"
-                                elif label == "negative":
-                                    score = -best_sentiment.get("score", 0.5)
-                                    display_label = "Bearish" if score < -0.7 else "Slightly Bearish"
-                                else:
-                                    score = 0.0
-                                    display_label = "Neutral"
-                                
-                                results.append({
-                                    "headline": headline,
-                                    "score": round(score, 3),
-                                    "label": display_label,
-                                    "confidence": confidence,
-                                    "key_factors": [label],
-                                    "market_impact": "high" if abs(score) > 0.7 else "medium" if abs(score) > 0.3 else "low",
-                                    "ai_analyzed": True
-                                })
-                                continue
+                                if isinstance(sentiments, list) and len(sentiments) > 0:
+                                    # Find the highest scoring sentiment
+                                    best_sentiment = max(sentiments, key=lambda x: x.get("score", 0))
+                                    label = best_sentiment.get("label", "neutral").lower()
+                                    confidence = int(best_sentiment.get("score", 0.5) * 100)
+                                    
+                                    # Convert to score (-1 to 1)
+                                    if label == "positive":
+                                        score = best_sentiment.get("score", 0.5)
+                                        display_label = "Bullish" if score > 0.7 else "Slightly Bullish"
+                                    elif label == "negative":
+                                        score = -best_sentiment.get("score", 0.5)
+                                        display_label = "Bearish" if score < -0.7 else "Slightly Bearish"
+                                    else:
+                                        score = 0.0
+                                        display_label = "Neutral"
+                                    
+                                    ai_result = {
+                                        "headline": headline,
+                                        "score": round(score, 3),
+                                        "label": display_label,
+                                        "confidence": confidence,
+                                        "key_factors": [label],
+                                        "market_impact": "high" if abs(score) > 0.7 else "medium" if abs(score) > 0.3 else "low",
+                                        "ai_analyzed": True
+                                    }
+                                    break
+                        elif response.status == 503:
+                            # Model is loading, wait and retry
+                            error_data = await response.json()
+                            wait_time = error_data.get("estimated_time", 10)
+                            logger.info(f"HuggingFace model loading, waiting {wait_time}s...")
+                            await asyncio.sleep(min(wait_time, 15))
+                        else:
+                            error_text = await response.text()
+                            logger.warning(f"HuggingFace API error {response.status}: {error_text[:100]}")
+                            break
+                except asyncio.TimeoutError:
+                    logger.warning(f"HuggingFace API timeout (attempt {attempt+1})")
+                except Exception as e:
+                    logger.warning(f"HuggingFace API error: {e}")
+                    break
+            
+            # Use AI result or fallback to keyword analysis
+            if ai_result:
+                results.append(ai_result)
+            else:
+                results.append(_keyword_sentiment_enhanced(headline))
                 except asyncio.TimeoutError:
                     logger.warning(f"HuggingFace API timeout for headline: {headline[:50]}...")
                 except Exception as e:
