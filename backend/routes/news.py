@@ -73,7 +73,7 @@ async def get_news_feed(
                 # Parse and reformat timestamp
                 dt = datetime.fromisoformat(published_at.replace("Z", "+00:00"))
                 published_at = dt.isoformat()
-            except:
+            except (ValueError, TypeError):
                 published_at = datetime.now(timezone.utc).isoformat()
         else:
             published_at = datetime.now(timezone.utc).isoformat()
