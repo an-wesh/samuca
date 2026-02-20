@@ -118,8 +118,14 @@ export default function ChartTerminalPage() {
     <div className="space-y-2" data-testid="chart-terminal-page">
       <div className="flex items-center gap-3 flex-wrap">
         <Select value={symbol} onValueChange={setSymbol}>
-          <SelectTrigger className="w-[130px] h-8 bg-[#111] border-[#222] text-xs font-mono" data-testid="symbol-select"><SelectValue /></SelectTrigger>
-          <SelectContent className="bg-[#0A0A0A] border-[#333]">{symbols.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
+          <SelectTrigger className="w-[160px] h-8 bg-[#111] border-[#222] text-xs font-mono" data-testid="symbol-select"><SelectValue /></SelectTrigger>
+          <SelectContent className="bg-[#0A0A0A] border-[#333] max-h-[300px]">
+            {symbols.map((s) => (
+              <SelectItem key={s} value={s} className="text-xs font-mono">
+                {s.replace(".NS", "")}
+              </SelectItem>
+            ))}
+          </SelectContent>
         </Select>
         <div className="flex gap-0.5">
           {["5m", "15m", "1h", "1d"].map((tf) => (
