@@ -40,7 +40,8 @@ const MetricCard = ({ label, value, subValue, icon: Icon, color, trend }) => (
 export default function BacktestLabPage() {
   const [strategies, setStrategies] = useState([]);
   const [selStrat, setSelStrat] = useState("");
-  const [symbol, setSymbol] = useState("BTCUSD");
+  const [symbol, setSymbol] = useState("RELIANCE.NS");
+  const [symbols, setSymbols] = useState([]);
   const [tf, setTf] = useState("1h");
   const [capital, setCapital] = useState(100000);
   const [comm, setComm] = useState(0.1);
@@ -53,6 +54,10 @@ export default function BacktestLabPage() {
   useEffect(() => {
     api.get("/strategies").then((r) => setStrategies(r.data)).catch(() => {});
     api.get("/backtests").then((r) => setHistory(r.data)).catch(() => {});
+    api.get("/market/symbols").then((r) => {
+      const symbolList = r.data.symbols.map(s => typeof s === 'object' ? s.symbol : s);
+      setSymbols(symbolList.slice(0, 50)); // Top 50 symbols for backtest
+    }).catch(() => {});
   }, []);
 
   const run = async () => {
