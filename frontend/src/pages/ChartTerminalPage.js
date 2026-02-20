@@ -78,10 +78,15 @@ export default function ChartTerminalPage() {
   const loadData = async () => {
     try {
       const { data } = await api.get(`/market/ohlcv?symbol=${symbol}&timeframe=${timeframe}&limit=500`);
-      if (candleRef.current) candleRef.current.setData(data.map((c) => ({ time: c.timestamp, open: c.open, high: c.high, low: c.low, close: c.close })));
-      if (volumeRef.current) volumeRef.current.setData(data.map((c) => ({ time: c.timestamp, value: c.volume, color: c.close >= c.open ? "rgba(0,227,150,0.25)" : "rgba(255,0,85,0.25)" })));
+      const ohlcv = data.data || data;
+      if (candleRef.current && ohlcv.length > 0) {
+        candleRef.current.setData(ohlcv.map((c) => ({ time: c.timestamp, open: c.open, high: c.high, low: c.low, close: c.close })));
+      }
+      if (volumeRef.current && ohlcv.length > 0) {
+        volumeRef.current.setData(ohlcv.map((c) => ({ time: c.timestamp, value: c.volume, color: c.close >= c.open ? "rgba(0,227,150,0.25)" : "rgba(255,0,85,0.25)" })));
+      }
       if (chartRef.current) chartRef.current.timeScale().fitContent();
-    } catch (err) { console.error(err); }
+    } catch (err) { console.error("Failed to load chart data:", err); }
   };
 
   const updateIndicators = async () => {
