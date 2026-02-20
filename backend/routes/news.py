@@ -122,7 +122,7 @@ async def get_cryptocurrency_news(limit: int = 10, user=Depends(get_current_user
 @news_router.post("/analyze")
 async def analyze_news_sentiment(req: NewsAnalysisRequest, user=Depends(get_current_user)):
     """
-    Analyze sentiment of news headlines using DeepSeek AI
+    Analyze sentiment of news headlines using HuggingFace free AI API
     Returns scores from -1 (very bearish) to +1 (very bullish)
     """
     if not req.headlines:
@@ -130,73 +130,67 @@ async def analyze_news_sentiment(req: NewsAnalysisRequest, user=Depends(get_curr
     
     results = []
     
+    # Try HuggingFace free inference API (no API key needed)
     try:
-        if DEEPSEEK_API_KEY:
-            # Use DeepSeek API for sentiment analysis
-            headlines_text = "\n".join([f"{i+1}. {h}" for i, h in enumerate(req.headlines)])
-            
-            system_prompt = """You are an expert financial sentiment analyzer specializing in Indian and global markets.
-For each headline provided, analyze the market sentiment and return ONLY a JSON array.
-Each object must have exactly these fields:
-- "score": float from -1.0 (extremely bearish) to 1.0 (extremely bullish)
-- "label": exactly one of "Strong Bullish", "Bullish", "Neutral", "Bearish", "Strong Bearish"
-- "confidence": integer from 0-100 representing certainty
-- "key_factors": array of 1-3 key words/phrases that influenced the analysis
-- "market_impact": "high", "medium", or "low"
-
-Return ONLY the JSON array, no other text or explanation."""
-
-            async with aiohttp.ClientSession() as session:
-                async with session.post(
-                    "https://api.deepseek.com/chat/completions",
-                    headers={
-                        "Authorization": f"Bearer {DEEPSEEK_API_KEY}",
-                        "Content-Type": "application/json"
-                    },
-                    json={
-                        "model": "deepseek-chat",
-                        "messages": [
-                            {"role": "system", "content": system_prompt},
-                            {"role": "user", "content": f"Analyze these financial headlines:\n{headlines_text}"}
-                        ],
-                        "temperature": 0.1,
-                        "max_tokens": 1000
-                    },
-                    timeout=30
-                ) as response:
-                    if response.status == 200:
-                        data = await response.json()
-                        response_text = data["choices"][0]["message"]["content"].strip()
-                        
-                        # Parse response
-                        if "```" in response_text:
-                            response_text = response_text.split("```")[1]
-                            if response_text.startswith("json"):
-                                response_text = response_text[4:]
-                        
-                        parsed = json.loads(response_text)
-                        
-                        if isinstance(parsed, list):
-                            for i, item in enumerate(parsed):
+        HF_API_URL = "https://api-inference.huggingface.co/models/ProsusAI/finbert"
+        
+        async with aiohttp.ClientSession() as session:
+            for headline in req.headlines:
+                try:
+                    async with session.post(
+                        HF_API_URL,
+                        headers={"Content-Type": "application/json"},
+                        json={"inputs": headline},
+                        timeout=15
+                    ) as response:
+                        if response.status == 200:
+                            data = await response.json()
+                            
+                            # FinBERT returns: [{"label": "positive/negative/neutral", "score": 0.xx}]
+                            if isinstance(data, list) and len(data) > 0:
+                                # Handle nested list format
+                                sentiments = data[0] if isinstance(data[0], list) else data
+                                
+                                # Find the highest scoring sentiment
+                                best_sentiment = max(sentiments, key=lambda x: x.get("score", 0))
+                                label = best_sentiment.get("label", "neutral").lower()
+                                confidence = int(best_sentiment.get("score", 0.5) * 100)
+                                
+                                # Convert to score (-1 to 1)
+                                if label == "positive":
+                                    score = best_sentiment.get("score", 0.5)
+                                    display_label = "Bullish" if score > 0.7 else "Slightly Bullish"
+                                elif label == "negative":
+                                    score = -best_sentiment.get("score", 0.5)
+                                    display_label = "Bearish" if score < -0.7 else "Slightly Bearish"
+                                else:
+                                    score = 0.0
+                                    display_label = "Neutral"
+                                
                                 results.append({
-                                    "headline": req.headlines[i] if i < len(req.headlines) else "",
-                                    "score": float(item.get("score", 0)),
-                                    "label": item.get("label", "Neutral"),
-                                    "confidence": int(item.get("confidence", 50)),
-                                    "key_factors": item.get("key_factors", []),
-                                    "market_impact": item.get("market_impact", "medium"),
+                                    "headline": headline,
+                                    "score": round(score, 3),
+                                    "label": display_label,
+                                    "confidence": confidence,
+                                    "key_factors": [label],
+                                    "market_impact": "high" if abs(score) > 0.7 else "medium" if abs(score) > 0.3 else "low",
                                     "ai_analyzed": True
                                 })
-                    else:
-                        error_text = await response.text()
-                        logger.warning(f"DeepSeek API error: {response.status} - {error_text}")
+                                continue
+                except asyncio.TimeoutError:
+                    logger.warning(f"HuggingFace API timeout for headline: {headline[:50]}...")
+                except Exception as e:
+                    logger.warning(f"HuggingFace API error: {e}")
+                
+                # If HuggingFace fails for this headline, use keyword fallback
+                results.append(_keyword_sentiment_enhanced(headline))
+                
     except Exception as e:
-        logger.warning(f"DeepSeek sentiment analysis failed, using fallback: {e}")
+        logger.warning(f"HuggingFace sentiment analysis failed completely: {e}")
         results = []
     
-    # Fallback to keyword-based analysis
-    if not results or len(results) != len(req.headlines):
-        results = []
+    # Fallback to keyword-based analysis if no results
+    if not results:
         for headline in req.headlines:
             results.append(_keyword_sentiment_enhanced(headline))
     
