@@ -1,291 +1,157 @@
-# AI Trading Bot Builder (TradeForge) - PRD
+# AI Trading Bot Builder Platform - PRD
 
 ## Original Problem Statement
-Build a production-grade, AI-powered trading bot builder platform with institutional-grade backtesting, strategy deployment, news sentiment analysis, and comprehensive technical indicators (all Zerodha Kite indicators).
+Build a production-grade, AI-powered trading bot builder platform with:
+1. Institutional-grade backtesting engine with candle-by-candle simulation
+2. Deployment pipeline to paper trading environment
+3. Simplified bot creation with visual builder and templates
+4. News & Sentiment integration with AI-powered analysis
+5. Machine Learning Lab for ML-based bots
+6. Admin Terminal for platform management
+7. All NSE stocks with real-time market data
 
-## Tech Stack
-- **Frontend:** React, TailwindCSS, ShadCN UI, Zustand, TradingView Lightweight Charts, Recharts
-- **Backend:** FastAPI, Python, WebSockets
-- **Database:** MongoDB
-- **AI/LLM:** OpenAI GPT via Emergent LLM Key
+## User Personas
+- **Retail Traders**: Individual investors looking to automate trading strategies
+- **Platform Admins**: Administrators managing users, capital, and platform operations
 
-## Core Requirements (P0-P5)
-- ✅ **P0:** Institutional-grade backtesting engine with 30+ indicators
-- ✅ **P1:** Strategy-to-Paper-Trading deployment pipeline
-- ✅ **P2:** Advanced Bot Creation UX (templates + visual builder)
-- ✅ **P3:** News Feed & Sentiment Engine (AI-powered)
-- ⏳ **P4:** Machine Learning Bot Builder (Future)
-- ⏳ **P5:** Admin Terminal (Future)
+## Core Features Implemented
 
----
+### P0 - Backtesting Engine ✅
+- Candle-by-candle institutional-grade simulation
+- Extensive technical indicators (RSI, MACD, Bollinger Bands, etc.)
+- Advanced performance metrics (Sharpe, Sortino, Max Drawdown, etc.)
+- Rich UI visualizations
 
-## What's Been Implemented
+### P1 - Deployment Pipeline ✅
+- Backend service for strategy deployment
+- Frontend page for managing deployments
+- Paper trading environment integration
 
-### Phase 1: Foundation (Complete - Previous Session)
-- JWT Authentication (signup/login)
-- MongoDB integration
-- Dashboard with KPIs
-- Chart Terminal with TradingView Lightweight Charts
-- Mock Market Data with WebSocket streaming
-- Basic Paper Trading
+### P2 - Bot Builder ✅
+- Visual strategy builder with drag-and-drop
+- Pre-built templates
+- Technical indicator support
+- Strategy validation
 
-### Phase 2: P0-P3 Implementation (Complete - Current Session)
+### P3 - News & Sentiment ✅
+- NewsAPI integration for real news feeds
+- AI sentiment analysis (keyword-based fallback when DeepSeek budget exhausted)
+- Symbol and sector news feeds
+- Sentiment aggregation
 
-#### P0: Institutional-Grade Backtesting Engine ✅
-**Date:** February 17, 2026
+### P4 - ML Bot Builder ✅
+- 5 pre-built ML templates:
+  - Trend Direction Classifier
+  - Volatility Predictor
+  - Momentum Score Predictor
+  - Reversal Pattern Detector
+  - Breakout Probability Predictor
+- 30+ ML features available
+- AutoML, Guided, and Advanced modes
+- Model training and evaluation pipeline
 
-**Backend:**
-- `/app/backend/utils/indicators.py` - 30+ technical indicators:
-  - **Trend:** SMA, EMA, WMA, DEMA, TEMA, SuperTrend, Ichimoku Cloud, Parabolic SAR, Williams Alligator
-  - **Momentum:** RSI, MACD, Stochastic, CCI, Williams %R, MFI, Aroon, Ultimate Oscillator, TSI, ROC
-  - **Volatility:** Bollinger Bands, ATR, Keltner Channels, Donchian Channels, Historical Volatility
-  - **Volume:** VWAP, OBV, Chaikin Money Flow, Accumulation/Distribution, Volume Price Trend
-  - **Trend Strength:** ADX, TRIX
-  - **Pivot Points:** Standard Pivots, CPR
+### P5 - Admin Terminal ✅
+- User management (search, filter, role management)
+- Capital allocation
+- Platform monitoring (activity stats, deployments)
+- Emergency stop functionality
 
-- `/app/backend/utils/backtest_engine.py` - Candle-by-candle simulation:
-  - Realistic slippage modeling
-  - Transaction costs (commission)
-  - Multiple position management
-  - Advanced metrics: Sharpe Ratio, Sortino Ratio, Calmar Ratio, Max Drawdown, Win Rate, Profit Factor, Expectancy, Payoff Ratio, Recovery Factor
+### Market Data ✅
+- 200+ NSE stocks via yfinance
+- US stocks and Crypto symbols
+- Real-time price updates
+- 30-day historical data
+- WebSocket for live updates
 
-- `/app/backend/routes/backtest.py` - Backtest API endpoints:
-  - `POST /api/backtest/run` - Run institutional backtest
-  - `GET /api/backtests` - List backtest history
-  - `GET /api/backtest/indicators` - List available indicators
+## Technical Architecture
 
-**Frontend:**
-- `/app/frontend/src/pages/BacktestLabPage.js`:
-  - Configuration panel (strategy, symbol, capital, fees, slippage)
-  - Key metrics cards (Total Return, CAGR, Sharpe, Sortino, Max Drawdown, Win Rate)
-  - Equity Curve chart with Recharts
-  - Drawdown chart
-  - Trade P&L distribution
-  - Detailed trade history table
-  - Tabs: Overview, Performance, Risk Analysis, Trades
+### Backend
+- FastAPI (Python)
+- MongoDB (motor async)
+- yfinance for market data
+- NewsAPI for news feeds
+- JWT authentication
 
-#### P1: Strategy Deployment Pipeline ✅
-**Date:** February 17, 2026
-
-**Backend:**
-- `/app/backend/routes/deployment.py`:
-  - `POST /api/deploy/create` - Deploy strategy to paper trading
-  - `GET /api/deploy/list` - List all deployments
-  - `GET /api/deploy/{id}` - Get deployment details
-  - `POST /api/deploy/{id}/start` - Resume deployment
-  - `POST /api/deploy/{id}/pause` - Pause deployment
-  - `POST /api/deploy/{id}/stop` - Stop and close positions
-  - `GET /api/deploy/{id}/signals` - Check current signals
-  - `POST /api/deploy/{id}/execute` - Manual trade execution
-  - `GET /api/deploy/{id}/trades` - Trade history
-
-**Frontend:**
-- `/app/frontend/src/pages/DeploymentsPage.js`:
-  - Deployment list with status badges
-  - Create deployment modal
-  - Deployment controls (Start/Pause/Stop/Delete)
-  - Stats cards (Capital, P&L, Win Rate, Trades)
-  - Current position panel
-  - Signal checking panel
-  - Trade history table
-
-#### P2: Advanced Bot Creation UX ✅
-**Date:** February 17, 2026
-
-**Frontend:**
-- `/app/frontend/src/pages/BotBuilderPage.js`:
-  - Mode switcher: Templates / Visual Builder
-  - 5 Pre-built strategy templates:
-    - RSI Mean Reversion
-    - MACD Momentum
-    - SuperTrend Follower
-    - Bollinger Squeeze
-    - Multi-Indicator Confirm
-  - Indicator palette with categories:
-    - Trend (SMA, EMA, SuperTrend, Ichimoku, PSAR, Alligator)
-    - Momentum (RSI, MACD, Stochastic, CCI, Williams %R, MFI, Aroon)
-    - Volatility (Bollinger Bands, Keltner, Donchian, ATR)
-    - Volume (VWAP, OBV, CMF, Volume MA)
-    - Trend Strength (ADX, TRIX)
-  - Entry/Exit condition builder with AND/OR logic
-  - Risk Management panel (Stop Loss, Take Profit, Position Size sliders)
-
-#### P3: News Feed & Sentiment Engine ✅
-**Date:** February 17, 2026
-
-**Backend:**
-- `/app/backend/routes/news.py`:
-  - `GET /api/news/feed` - Get news feed (all symbols)
-  - `GET /api/news/feed/{symbol}` - Get symbol-specific news
-  - `POST /api/news/analyze` - AI sentiment analysis
-  - `GET /api/news/sentiment/history` - Sentiment history
-  - `GET /api/news/sentiment/aggregate/{symbol}` - Aggregated sentiment
-
-**Features:**
-- Mock news headlines for BTCUSD, ETHUSD, AAPL, TSLA, SPY
-- AI sentiment analysis using OpenAI GPT (via Emergent LLM Key)
-- Keyword-based fallback when LLM unavailable
-- Sentiment scores: -1 (Strong Bearish) to +1 (Strong Bullish)
-- Key factors extraction
-- Confidence percentage
-
-**Frontend:**
-- `/app/frontend/src/pages/NewsSentimentPage.js`:
-  - Symbol sentiment overview with gauges
-  - News feed with source and timestamp
-  - Individual headline analysis
-  - Custom headline analyzer (textarea)
-  - Results panel with aggregate metrics
-  - Bullish/Neutral/Bearish counts
-
----
-
-## Architecture
-
-```
-/app
-├── backend/
-│   ├── .env                    # Environment config
-│   ├── requirements.txt        # Python dependencies
-│   ├── database.py            # MongoDB connection
-│   ├── server.py              # FastAPI app, routes
-│   ├── routes/
-│   │   ├── ai_services.py     # AI bot generation (stub)
-│   │   ├── backtest.py        # Backtest endpoints
-│   │   ├── bots.py            # Bot CRUD
-│   │   ├── deployment.py      # Strategy deployment
-│   │   ├── market.py          # Market data + WebSocket
-│   │   ├── news.py            # News & Sentiment
-│   │   └── paper_trading.py   # Paper trading
-│   └── utils/
-│       ├── backtest_engine.py # Institutional backtest
-│       ├── engines.py         # Legacy (basic indicators)
-│       ├── indicators.py      # 30+ technical indicators
-│       └── market_generator.py # Mock data generator
-└── frontend/
-    ├── package.json
-    └── src/
-        ├── App.js              # Router + Auth
-        ├── index.css           # Global styles
-        ├── components/
-        │   ├── layout/
-        │   │   ├── AppLayout.js
-        │   │   └── Sidebar.js
-        │   └── ui/             # ShadCN components
-        ├── lib/
-        │   ├── api.js          # Axios instance
-        │   └── store.js        # Zustand state
-        └── pages/
-            ├── BacktestLabPage.js
-            ├── BotBuilderPage.js
-            ├── BotManagementPage.js
-            ├── ChartTerminalPage.js
-            ├── DashboardPage.js
-            ├── DeploymentsPage.js
-            ├── LoginPage.js
-            ├── NewsSentimentPage.js
-            └── PaperTradingPage.js
-```
-
----
-
-## Database Schema
-
-### Collections:
-- `users` - User accounts
-- `strategies` - Saved trading strategies
-- `backtests` - Backtest history
-- `deployments` - Active deployments
-- `deployment_trades` - Deployment trade records
-- `sentiment_analysis` - Sentiment history
-- `market_data_{timeframe}` - OHLCV data
-
----
+### Frontend
+- React 18
+- TailwindCSS
+- ShadCN UI components
+- TradingView Lightweight Charts
+- Zustand state management
 
 ## API Endpoints
 
 ### Authentication
-- `POST /api/auth/signup`
-- `POST /api/auth/login`
-- `GET /api/auth/me`
-
-### Strategies
-- `GET /api/strategies`
-- `POST /api/strategies`
-- `DELETE /api/strategies/{id}`
-
-### Backtesting
-- `POST /api/backtest/run`
-- `GET /api/backtests`
-- `GET /api/backtests/{id}`
-- `GET /api/backtest/indicators`
-
-### Deployments
-- `POST /api/deploy/create`
-- `GET /api/deploy/list`
-- `GET /api/deploy/{id}`
-- `POST /api/deploy/{id}/start`
-- `POST /api/deploy/{id}/pause`
-- `POST /api/deploy/{id}/stop`
-- `GET /api/deploy/{id}/signals`
-- `POST /api/deploy/{id}/execute`
-
-### News & Sentiment
-- `GET /api/news/feed`
-- `GET /api/news/feed/{symbol}`
-- `POST /api/news/analyze`
-- `GET /api/news/sentiment/aggregate/{symbol}`
+- POST /api/auth/signup
+- POST /api/auth/login
 
 ### Market Data
-- `GET /api/market/ohlcv`
-- `GET /api/market/latest_prices`
-- `WS /ws/market`
+- GET /api/market/symbols (200+ symbols)
+- GET /api/market/price/{symbol}
+- GET /api/market/ohlcv
+- GET /api/market/latest_prices
+- GET /api/market/nifty50
+- GET /api/market/sector/{sector}
+- WS /api/market/ws/prices
 
----
+### Bots & Trading
+- POST /api/bots
+- GET /api/bots
+- POST /api/backtest/run
+- GET /api/paper-trading/account
 
-## Remaining Work (Backlog)
+### ML Bot Builder
+- GET /api/ml/templates
+- GET /api/ml/features
+- POST /api/ml/train
+- GET /api/ml/models
 
-### P4: Machine Learning Bot Builder
-- AutoML mode for beginners
-- Guided mode with model selection
-- Advanced mode for custom models
-- XGBoost/LSTM integration
-- Feature engineering pipeline
-- Model training dashboard
-- Inference endpoints
+### News & Sentiment
+- GET /api/news/feed
+- POST /api/news/analyze
+- GET /api/news/trending
 
-### P5: Admin Terminal
-- User management (CRUD)
-- Virtual capital allocation
-- Platform activity monitoring
-- Risk controls enforcement
-- RBAC middleware
-- Admin-only routes
+### Admin
+- GET /api/admin/dashboard
+- GET /api/admin/users
+- PUT /api/admin/users/{user_id}
+- GET /api/admin/monitoring/activity
 
-### Future Enhancements
-- Real news API integration (replace mocks)
-- Live trading integration (exchange APIs)
-- Strategy marketplace
-- Social trading features
-- Advanced charting (candlestick patterns)
-- Multi-asset portfolio optimization
-- Backtesting with multiple instruments
-- Walk-forward optimization
+## Database Collections
+- users: User accounts with roles
+- bots: Trading bot configurations
+- deployments: Live deployments
+- market_data_{timeframe}: OHLCV data
+- sentiment_analysis: Sentiment results
+- ml_models: Trained ML models
 
----
+## Third-Party Integrations
+- yfinance: Real market data
+- NewsAPI: Financial news (key: provided)
+- DeepSeek: AI sentiment (insufficient balance - using keyword fallback)
 
 ## Test Credentials
-- Email: `backtest@test.com`
-- Password: `Test123!`
+- Email: admin@test.com
+- Password: admin123
+- Role: admin
 
 ## Known Limitations
-- News data is MOCKED (static headlines)
-- AI Sentiment falls back to keyword analysis when LLM budget exceeded
-- Market data is simulated (mock OHLCV generator)
-- Paper trading only (no live exchange integration)
+1. DeepSeek API has insufficient balance - sentiment analysis uses keyword-based fallback
+2. Live exchange trading is explicitly out of scope
+3. NewsAPI free tier has rate limits
 
----
+## Future Enhancements (Backlog)
+- [ ] More ML model types (LSTM, Transformer)
+- [ ] Strategy marketplace
+- [ ] Social trading features
+- [ ] Mobile app
+- [ ] Advanced risk management tools
+- [ ] Multi-asset portfolio optimization
 
-## Test Reports
-- `/app/test_reports/iteration_1.json` - Initial MVP tests
-- `/app/test_reports/iteration_2.json` - P0-P3 feature tests (100% pass rate)
+## Session Summary - February 20, 2026
+- Integrated P4 (ML Bot Builder) and P5 (Admin Terminal)
+- Added DeepSeek API integration (falls back to keyword analysis)
+- Fixed ObjectId serialization issue in market data
+- Verified all 18 backend endpoints working
+- All frontend pages loading correctly
+- Testing: 100% backend pass rate, 100% frontend pass rate
