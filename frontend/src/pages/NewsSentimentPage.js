@@ -186,7 +186,7 @@ export default function NewsSentimentPage() {
             </SelectTrigger>
             <SelectContent className="bg-[#0A0A0A] border-[#333]">
               <SelectItem value="all">All</SelectItem>
-              {["BTCUSD", "ETHUSD", "AAPL", "TSLA", "SPY"].map(s => (
+              {["BTC-USD", "ETH-USD", "AAPL", "TSLA", "SPY"].map(s => (
                 <SelectItem key={s} value={s}>{s}</SelectItem>
               ))}
             </SelectContent>
@@ -205,7 +205,7 @@ export default function NewsSentimentPage() {
 
       {/* Symbol Sentiment Overview */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
-        {["BTCUSD", "ETHUSD", "AAPL", "TSLA", "SPY"].map(sym => {
+        {["BTC-USD", "ETH-USD", "AAPL", "TSLA", "SPY"].map(sym => {
           const sent = symbolSentiment[sym] || { avg_score: 0, label: "Neutral" };
           return (
             <Card 
