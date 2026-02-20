@@ -244,10 +244,10 @@ for stock in ALL_NSE_STOCKS:
         STOCK_BY_SECTOR[sector] = []
     STOCK_BY_SECTOR[sector].append(stock)
 
-# Keep crypto for international markets
+# Keep crypto for international markets (Yahoo Finance format)
 CRYPTO_SYMBOLS = [
-    {"symbol": "BTCUSD", "name": "Bitcoin USD", "sector": "Crypto"},
-    {"symbol": "ETHUSD", "name": "Ethereum USD", "sector": "Crypto"},
+    {"symbol": "BTC-USD", "name": "Bitcoin USD", "sector": "Crypto"},
+    {"symbol": "ETH-USD", "name": "Ethereum USD", "sector": "Crypto"},
 ]
 
 # US stocks for reference
