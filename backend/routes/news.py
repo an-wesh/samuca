@@ -1,14 +1,15 @@
 """
 News & Sentiment Analysis API Routes
-Real-time news feeds and AI-powered sentiment analysis using DeepSeek
+Real-time news feeds and AI-powered sentiment analysis using HuggingFace FinBERT
 """
 from fastapi import APIRouter, Depends, HTTPException
-from database import db, get_current_user, DEEPSEEK_API_KEY
+from database import db, get_current_user
 from pydantic import BaseModel
 from typing import List, Optional
 import uuid
 import json
 import logging
+import asyncio
 import aiohttp
 from datetime import datetime, timezone, timedelta
 
