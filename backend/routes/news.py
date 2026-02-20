@@ -203,22 +203,6 @@ async def analyze_news_sentiment(req: NewsAnalysisRequest, user=Depends(get_curr
                 results.append(ai_result)
             else:
                 results.append(_keyword_sentiment_enhanced(headline))
-                except asyncio.TimeoutError:
-                    logger.warning(f"HuggingFace API timeout for headline: {headline[:50]}...")
-                except Exception as e:
-                    logger.warning(f"HuggingFace API error: {e}")
-                
-                # If HuggingFace fails for this headline, use keyword fallback
-                results.append(_keyword_sentiment_enhanced(headline))
-                
-    except Exception as e:
-        logger.warning(f"HuggingFace sentiment analysis failed completely: {e}")
-        results = []
-    
-    # Fallback to keyword-based analysis if no results
-    if not results:
-        for headline in req.headlines:
-            results.append(_keyword_sentiment_enhanced(headline))
     
     # Store results
     for r in results:
