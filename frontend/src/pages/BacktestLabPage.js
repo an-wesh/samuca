@@ -127,8 +127,8 @@ export default function BacktestLabPage() {
                 <SelectTrigger className="h-8 bg-[#111] border-[#222] text-xs" data-testid="bt-symbol">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-[#0A0A0A] border-[#333]">
-                  {["BTCUSD","ETHUSD","AAPL","TSLA","SPY"].map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                <SelectContent className="bg-[#0A0A0A] border-[#333] max-h-[250px]">
+                  {symbols.map((s) => <SelectItem key={s} value={s}>{s.replace(".NS", "")}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
