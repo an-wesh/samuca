@@ -16,12 +16,18 @@ export default function ChartTerminalPage() {
   const indRefs = useRef({});
   const wsRef = useRef(null);
 
-  const [symbol, setSymbol] = useState("BTCUSD");
+  const [symbol, setSymbol] = useState("RELIANCE.NS");
   const [timeframe, setTimeframe] = useState("1h");
   const [symbols, setSymbols] = useState([]);
   const [indicators, setIndicators] = useState({ sma: false, ema: false, bb: false });
 
-  useEffect(() => { api.get("/market/symbols").then((r) => setSymbols(r.data.symbols)); }, []);
+  useEffect(() => { 
+    api.get("/market/symbols").then((r) => {
+      // Extract symbol strings from the response objects
+      const symbolList = r.data.symbols.map(s => typeof s === 'object' ? s.symbol : s);
+      setSymbols(symbolList);
+    }); 
+  }, []);
 
   useEffect(() => {
     if (!chartContainerRef.current) return;
