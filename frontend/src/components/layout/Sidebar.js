@@ -67,7 +67,7 @@ export default function Sidebar() {
                 <LogOut className="w-5 h-5" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="right" className="bg-[#111] border-[#333] text-xs">Logout</TooltipContent>
+            <TooltipContent side="right" className="bg-[#111] border-[#333] text-xs text-white">Logout</TooltipContent>
           </Tooltip>
         </div>
       </div>
