@@ -126,7 +126,7 @@ export default function NewsSentimentPage() {
   }, [selectedSymbol]);
 
   const fetchSymbolSentiments = useCallback(async () => {
-    const symbols = ["BTCUSD", "ETHUSD", "AAPL", "TSLA", "SPY"];
+    const symbols = ["BTC-USD", "ETH-USD", "AAPL", "TSLA", "SPY"];
     const sentiments = {};
     
     for (const sym of symbols) {
