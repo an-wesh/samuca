@@ -184,14 +184,16 @@ async def load_historical_data(db, symbol: str, timeframe: str = "1h", force_ref
         if records:
             await collection.insert_many(records)
             logger.info(f"Loaded {len(records)} candles for {symbol}")
-            return records
+            # Return data without _id field
+            return await collection.find({"symbol": symbol}, {"_id": 0}).sort("timestamp", 1).to_list(2000)
     
     # Fallback to mock data
     logger.warning(f"Using mock data for {symbol}")
     mock_data = generate_mock_ohlcv(symbol, days=30)
     await collection.delete_many({"symbol": symbol})
     await collection.insert_many(mock_data)
-    return mock_data
+    # Return data without _id field
+    return await collection.find({"symbol": symbol}, {"_id": 0}).sort("timestamp", 1).to_list(2000)
 
 
 async def refresh_all_prices(db, symbols: List[str]) -> Dict[str, Any]:
