@@ -45,7 +45,7 @@ export default function Sidebar() {
                     <item.icon className="w-5 h-5" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent side="right" className="bg-[#111] border-[#333] text-xs">{item.label}</TooltipContent>
+                <TooltipContent side="right" className="bg-[#111] border-[#333] text-xs text-white">{item.label}</TooltipContent>
               </Tooltip>
             );
           })}
