@@ -122,7 +122,7 @@ async def get_cryptocurrency_news(limit: int = 10, user=Depends(get_current_user
 @news_router.post("/analyze")
 async def analyze_news_sentiment(req: NewsAnalysisRequest, user=Depends(get_current_user)):
     """
-    Analyze sentiment of news headlines using Grok AI
+    Analyze sentiment of news headlines using DeepSeek AI
     Returns scores from -1 (very bearish) to +1 (very bullish)
     """
     if not req.headlines:
@@ -131,8 +131,8 @@ async def analyze_news_sentiment(req: NewsAnalysisRequest, user=Depends(get_curr
     results = []
     
     try:
-        if XAI_API_KEY:
-            # Use Grok API for sentiment analysis
+        if DEEPSEEK_API_KEY:
+            # Use DeepSeek API for sentiment analysis
             headlines_text = "\n".join([f"{i+1}. {h}" for i, h in enumerate(req.headlines)])
             
             system_prompt = """You are an expert financial sentiment analyzer specializing in Indian and global markets.
@@ -148,13 +148,13 @@ Return ONLY the JSON array, no other text or explanation."""
 
             async with aiohttp.ClientSession() as session:
                 async with session.post(
-                    "https://api.x.ai/v1/chat/completions",
+                    "https://api.deepseek.com/chat/completions",
                     headers={
-                        "Authorization": f"Bearer {XAI_API_KEY}",
+                        "Authorization": f"Bearer {DEEPSEEK_API_KEY}",
                         "Content-Type": "application/json"
                     },
                     json={
-                        "model": "grok-3-mini",
+                        "model": "deepseek-chat",
                         "messages": [
                             {"role": "system", "content": system_prompt},
                             {"role": "user", "content": f"Analyze these financial headlines:\n{headlines_text}"}
@@ -189,9 +189,9 @@ Return ONLY the JSON array, no other text or explanation."""
                                 })
                     else:
                         error_text = await response.text()
-                        logger.warning(f"Grok API error: {response.status} - {error_text}")
+                        logger.warning(f"DeepSeek API error: {response.status} - {error_text}")
     except Exception as e:
-        logger.warning(f"Grok sentiment analysis failed, using fallback: {e}")
+        logger.warning(f"DeepSeek sentiment analysis failed, using fallback: {e}")
         results = []
     
     # Fallback to keyword-based analysis
