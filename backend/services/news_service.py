@@ -49,9 +49,9 @@ SYMBOL_TOPICS = {
     "TITAN.NS": ["Titan Company", "Titan Watch"],
     "ASIANPAINT.NS": ["Asian Paints"],
     "LT.NS": ["Larsen Toubro", "L&T"],
-    # Crypto
-    "BTCUSD": ["Bitcoin", "BTC", "cryptocurrency"],
-    "ETHUSD": ["Ethereum", "ETH", "crypto"],
+    # Crypto (Yahoo Finance format)
+    "BTC-USD": ["Bitcoin", "BTC", "cryptocurrency"],
+    "ETH-USD": ["Ethereum", "ETH", "crypto"],
     # US Stocks
     "AAPL": ["Apple", "iPhone", "Tim Cook"],
     "TSLA": ["Tesla", "Elon Musk", "Electric Vehicle"],
