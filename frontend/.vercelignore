@@ -1,0 +1,4 @@
+# Vercel Deployment - Ignore backend folder
+backend/
+*.md
+.git/
