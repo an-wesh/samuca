@@ -103,7 +103,7 @@ export default function ChartTerminalPage() {
     return () => { ro.disconnect(); chart.remove(); };
   }, []);
 
-  useEffect(() => { loadData(); }, [symbol, timeframe]);
+  useEffect(() => { loadData(); }, [symbol, timeframe, loadData]);
 
   useEffect(() => {
     if (wsRef.current) wsRef.current.close();
@@ -117,51 +117,7 @@ export default function ChartTerminalPage() {
     return () => ws.close();
   }, [symbol]);
 
-  useEffect(() => { updateIndicators(); }, [indicators, symbol, timeframe]);
-
-  const loadData = async () => {
-    try {
-      const { data } = await api.get(`/market/ohlcv?symbol=${symbol}&timeframe=${timeframe}&limit=500`);
-      const ohlcv = data.data || data;
-      if (candleRef.current && ohlcv.length > 0) {
-        candleRef.current.setData(ohlcv.map((c) => ({ time: c.timestamp, open: c.open, high: c.high, low: c.low, close: c.close })));
-      }
-      if (volumeRef.current && ohlcv.length > 0) {
-        volumeRef.current.setData(ohlcv.map((c) => ({ time: c.timestamp, value: c.volume, color: c.close >= c.open ? "rgba(0,227,150,0.25)" : "rgba(255,0,85,0.25)" })));
-      }
-      if (chartRef.current) chartRef.current.timeScale().fitContent();
-    } catch (err) { console.error("Failed to load chart data:", err); }
-  };
-
-  const updateIndicators = async () => {
-    const chart = chartRef.current;
-    if (!chart) return;
-    Object.values(indRefs.current).forEach((s) => { try { chart.removeSeries(s); } catch {} });
-    indRefs.current = {};
-    if (!indicators.sma && !indicators.ema && !indicators.bb) return;
-    try {
-      const { data } = await api.get(`/indicators/${symbol}?timeframe=${timeframe}`);
-      const ind = data.indicators;
-      if (indicators.sma && ind.sma_20) {
-        const s = chart.addSeries(LineSeries, { color: "#3B82F6", lineWidth: 1, title: "SMA 20" });
-        s.setData(ind.timestamps.map((t, i) => ind.sma_20[i] != null ? { time: t, value: ind.sma_20[i] } : null).filter(Boolean));
-        indRefs.current.sma = s;
-      }
-      if (indicators.ema && ind.ema_50) {
-        const s = chart.addSeries(LineSeries, { color: "#F59E0B", lineWidth: 1, title: "EMA 50" });
-        s.setData(ind.timestamps.map((t, i) => ind.ema_50[i] != null ? { time: t, value: ind.ema_50[i] } : null).filter(Boolean));
-        indRefs.current.ema = s;
-      }
-      if (indicators.bb && ind.bb_upper && ind.bb_lower) {
-        const u = chart.addSeries(LineSeries, { color: "#8B5CF6", lineWidth: 1, lineStyle: 2, title: "BB Upper" });
-        const l = chart.addSeries(LineSeries, { color: "#8B5CF6", lineWidth: 1, lineStyle: 2, title: "BB Lower" });
-        u.setData(ind.timestamps.map((t, i) => ind.bb_upper[i] != null ? { time: t, value: ind.bb_upper[i] } : null).filter(Boolean));
-        l.setData(ind.timestamps.map((t, i) => ind.bb_lower[i] != null ? { time: t, value: ind.bb_lower[i] } : null).filter(Boolean));
-        indRefs.current.bb_u = u;
-        indRefs.current.bb_l = l;
-      }
-    } catch {}
-  };
+  useEffect(() => { updateIndicators(); }, [indicators, symbol, timeframe, updateIndicators]);
 
   return (
     <div className="space-y-2" data-testid="chart-terminal-page">
