@@ -16,8 +16,6 @@ db = client[os.environ['DB_NAME']]
 JWT_SECRET = os.environ.get('JWT_SECRET', 'ai-trading-bot-jwt-secret-2024')
 JWT_ALGORITHM = 'HS256'
 JWT_EXPIRY_HOURS = 24
-EMERGENT_LLM_KEY = os.environ.get('EMERGENT_LLM_KEY', '')
-DEEPSEEK_API_KEY = os.environ.get('DEEPSEEK_API_KEY', '')
 NEWS_API_KEY = os.environ.get('NEWS_API_KEY', '')
 
 security = HTTPBearer(auto_error=False)
