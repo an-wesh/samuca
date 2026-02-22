@@ -99,7 +99,7 @@ export default function ChartTerminalPage() {
     return () => { ro.disconnect(); chart.remove(); };
   }, []);
 
-  useEffect(() => { loadData(); }, [symbol, timeframe, loadData]);
+  useEffect(() => { loadData(); }, [loadData]);
 
   useEffect(() => {
     if (wsRef.current) wsRef.current.close();
@@ -113,7 +113,7 @@ export default function ChartTerminalPage() {
     return () => ws.close();
   }, [symbol]);
 
-  useEffect(() => { updateIndicators(); }, [indicators, symbol, timeframe, updateIndicators]);
+  useEffect(() => { updateIndicators(); }, [updateIndicators]);
 
   return (
     <div className="space-y-2" data-testid="chart-terminal-page">
