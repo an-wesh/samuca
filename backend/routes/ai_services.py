@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from database import db, get_current_user, EMERGENT_LLM_KEY
+from database import db, get_current_user
 from pydantic import BaseModel
 from typing import List
 import uuid
@@ -18,8 +18,8 @@ FUNDAMENTALS = {
     "AAPL": {"pe_ratio": 28.5, "roe": 147.5, "eps_growth": 12.3, "revenue_growth": 8.1, "fundamental_score": 78, "valuation": "Fair Valued", "bias": "Bullish", "market_cap": "2.8T", "sector": "Technology"},
     "TSLA": {"pe_ratio": 72.3, "roe": 23.8, "eps_growth": -15.2, "revenue_growth": 3.5, "fundamental_score": 45, "valuation": "Overvalued", "bias": "Neutral", "market_cap": "780B", "sector": "Automotive"},
     "SPY": {"pe_ratio": 22.1, "roe": 18.5, "eps_growth": 9.8, "revenue_growth": 5.2, "fundamental_score": 72, "valuation": "Fair Valued", "bias": "Bullish", "market_cap": "N/A", "sector": "Index"},
-    "BTCUSD": {"hash_rate": "600 EH/s", "active_addresses": "1.2M", "nvt_ratio": 45.2, "fundamental_score": 82, "valuation": "Fair", "bias": "Bullish", "market_cap": "1.3T", "sector": "Crypto"},
-    "ETHUSD": {"tvl": "52B", "active_addresses": "500K", "gas_fees": "12 gwei", "fundamental_score": 75, "valuation": "Fair", "bias": "Bullish", "market_cap": "420B", "sector": "Crypto"},
+    "BTC-USD": {"hash_rate": "600 EH/s", "active_addresses": "1.2M", "nvt_ratio": 45.2, "fundamental_score": 82, "valuation": "Fair", "bias": "Bullish", "market_cap": "1.3T", "sector": "Crypto"},
+    "ETH-USD": {"tvl": "52B", "active_addresses": "500K", "gas_fees": "12 gwei", "fundamental_score": 75, "valuation": "Fair", "bias": "Bullish", "market_cap": "420B", "sector": "Crypto"},
 }
 
 def _keyword_sentiment(headline):
@@ -41,37 +41,8 @@ async def analyze_sentiment(req: SentimentRequest, user=Depends(get_current_user
     if not req.headlines:
         raise HTTPException(status_code=400, detail="Headlines required")
 
-    results = []
-    try:
-        if EMERGENT_LLM_KEY:
-            from emergentintegrations.llm.chat import LlmChat, UserMessage
-            chat = LlmChat(
-                api_key=EMERGENT_LLM_KEY,
-                session_id=f"sentiment-{uuid.uuid4()}",
-                system_message="You are a financial sentiment analyzer. For each headline, return ONLY a JSON array with objects having: score (float -1 to 1), label (Bullish/Bearish/Neutral), confidence (int 0-100). No other text."
-            )
-            headlines_text = "\n".join([f"{i+1}. {h}" for i, h in enumerate(req.headlines)])
-            response = await chat.send_message(UserMessage(text=f"Analyze:\n{headlines_text}"))
-            response_text = response.strip()
-            if "```" in response_text:
-                response_text = response_text.split("```")[1]
-                if response_text.startswith("json"):
-                    response_text = response_text[4:]
-            parsed = json.loads(response_text)
-            if isinstance(parsed, list):
-                for i, item in enumerate(parsed):
-                    results.append({
-                        "headline": req.headlines[i] if i < len(req.headlines) else "",
-                        "score": float(item.get("score", 0)),
-                        "label": item.get("label", "Neutral"),
-                        "confidence": float(item.get("confidence", 50)),
-                    })
-    except Exception as e:
-        logger.warning(f"LLM sentiment failed, using keyword fallback: {e}")
-        results = []
-
-    if not results:
-        results = [_keyword_sentiment(h) for h in req.headlines]
+    # Use keyword-based sentiment analysis
+    results = [_keyword_sentiment(h) for h in req.headlines]
 
     for r in results:
         r["id"] = str(uuid.uuid4())
