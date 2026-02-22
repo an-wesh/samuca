@@ -1,4 +1,8 @@
-import { useState, useEffect, useRef } from "react";
+Go to: https://github.com/an-wesh/samuca/blob/main/frontend/src/pages/ChartTerminalPage.js
+Click the pencil icon (Edit)
+Select all (Ctrl+A) and delete everything
+Paste this entire code:
+import { useState, useEffect, useRef, useCallback } from "react";
 import { createChart, CandlestickSeries, LineSeries, HistogramSeries } from "lightweight-charts";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -23,59 +27,12 @@ export default function ChartTerminalPage() {
 
   useEffect(() => { 
     api.get("/market/symbols").then((r) => {
-      // Extract symbol strings from the response objects
       const symbolList = r.data.symbols.map(s => typeof s === 'object' ? s.symbol : s);
       setSymbols(symbolList);
     }); 
   }, []);
 
-  useEffect(() => {
-    if (!chartContainerRef.current) return;
-    const chart = createChart(chartContainerRef.current, {
-      layout: { background: { type: "solid", color: "#050505" }, textColor: "#71717A", fontFamily: "JetBrains Mono, monospace", fontSize: 11 },
-      grid: { vertLines: { color: "#111" }, horzLines: { color: "#111" } },
-      crosshair: { mode: 0, vertLine: { color: "#333", labelBackgroundColor: "#222" }, horzLine: { color: "#333", labelBackgroundColor: "#222" } },
-      rightPriceScale: { borderColor: "#222", scaleMargins: { top: 0.1, bottom: 0.2 } },
-      timeScale: { borderColor: "#222", timeVisible: true, secondsVisible: false },
-      localization: { locale: "en-US" },
-    });
-    chartRef.current = chart;
-
-    const cs = chart.addSeries(CandlestickSeries, {
-      upColor: "#00E396", downColor: "#FF0055",
-      borderUpColor: "#00E396", borderDownColor: "#FF0055",
-      wickUpColor: "#00E396", wickDownColor: "#FF0055",
-    });
-    candleRef.current = cs;
-
-    const vs = chart.addSeries(HistogramSeries, { color: "#3B82F6", priceFormat: { type: "volume" }, priceScaleId: "vol" });
-    vs.priceScale().applyOptions({ scaleMargins: { top: 0.85, bottom: 0 } });
-    volumeRef.current = vs;
-
-    const ro = new ResizeObserver((entries) => {
-      for (const e of entries) chart.applyOptions({ width: e.contentRect.width, height: e.contentRect.height });
-    });
-    ro.observe(chartContainerRef.current);
-    return () => { ro.disconnect(); chart.remove(); };
-  }, []);
-
-  useEffect(() => { loadData(); }, [symbol, timeframe]);
-
-  useEffect(() => {
-    if (wsRef.current) wsRef.current.close();
-    const wsUrl = `${BACKEND_URL.replace("https://", "wss://").replace("http://", "ws://")}/api/market/ws/${symbol}`;
-    const ws = new WebSocket(wsUrl);
-    ws.onmessage = (e) => {
-      const t = JSON.parse(e.data);
-      if (candleRef.current) candleRef.current.update({ time: t.timestamp, open: t.open, high: t.high, low: t.low, close: t.close });
-    };
-    wsRef.current = ws;
-    return () => ws.close();
-  }, [symbol]);
-
-  useEffect(() => { updateIndicators(); }, [indicators, symbol, timeframe]);
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       const { data } = await api.get(`/market/ohlcv?symbol=${symbol}&timeframe=${timeframe}&limit=500`);
       const ohlcv = data.data || data;
@@ -87,12 +44,12 @@ export default function ChartTerminalPage() {
       }
       if (chartRef.current) chartRef.current.timeScale().fitContent();
     } catch (err) { console.error("Failed to load chart data:", err); }
-  };
+  }, [symbol, timeframe]);
 
-  const updateIndicators = async () => {
+  const updateIndicators = useCallback(async () => {
     const chart = chartRef.current;
     if (!chart) return;
-    Object.values(indRefs.current).forEach((s) => { try { chart.removeSeries(s); } catch {} });
+    Object.values(indRefs.current).forEach((s) => { try { chart.removeSeries(s); } catch (e) { console.log(e); } });
     indRefs.current = {};
     if (!indicators.sma && !indicators.ema && !indicators.bb) return;
     try {
@@ -113,11 +70,54 @@ export default function ChartTerminalPage() {
         const l = chart.addSeries(LineSeries, { color: "#8B5CF6", lineWidth: 1, lineStyle: 2, title: "BB Lower" });
         u.setData(ind.timestamps.map((t, i) => ind.bb_upper[i] != null ? { time: t, value: ind.bb_upper[i] } : null).filter(Boolean));
         l.setData(ind.timestamps.map((t, i) => ind.bb_lower[i] != null ? { time: t, value: ind.bb_lower[i] } : null).filter(Boolean));
-        indRefs.current.bb_u = u;
-        indRefs.current.bb_l = l;
+        indRefs.current.bbu = u;
+        indRefs.current.bbl = l;
       }
-    } catch {}
-  };
+    } catch (err) { console.error("Failed to load indicators:", err); }
+  }, [indicators, symbol, timeframe]);
+
+  useEffect(() => {
+    if (!chartContainerRef.current) return;
+    const chart = createChart(chartContainerRef.current, {
+      layout: { background: { type: "solid", color: "#050505" }, textColor: "#71717A", fontFamily: "JetBrains Mono, monospace", fontSize: 11 },
+      grid: { vertLines: { color: "#111" }, horzLines: { color: "#111" } },
+      crosshair: { mode: 0, vertLine: { color: "#333", labelBackgroundColor: "#222" }, horzLine: { color: "#333", labelBackgroundColor: "#222" } },
+      rightPriceScale: { borderColor: "#222", scaleMargins: { top: 0.1, bottom: 0.2 } },
+      timeScale: { borderColor: "#222", timeVisible: true, secondsVisible: false },
+      localization: { locale: "en-US" },
+    });
+    chartRef.current = chart;
+    const cs = chart.addSeries(CandlestickSeries, {
+      upColor: "#00E396", downColor: "#FF0055",
+      borderUpColor: "#00E396", borderDownColor: "#FF0055",
+      wickUpColor: "#00E396", wickDownColor: "#FF0055",
+    });
+    candleRef.current = cs;
+    const vs = chart.addSeries(HistogramSeries, { color: "#3B82F6", priceFormat: { type: "volume" }, priceScaleId: "vol" });
+    vs.priceScale().applyOptions({ scaleMargins: { top: 0.85, bottom: 0 } });
+    volumeRef.current = vs;
+    const ro = new ResizeObserver((entries) => {
+      for (const e of entries) chart.applyOptions({ width: e.contentRect.width, height: e.contentRect.height });
+    });
+    ro.observe(chartContainerRef.current);
+    return () => { ro.disconnect(); chart.remove(); };
+  }, []);
+
+  useEffect(() => { loadData(); }, [symbol, timeframe, loadData]);
+
+  useEffect(() => {
+    if (wsRef.current) wsRef.current.close();
+    const wsUrl = `${BACKEND_URL.replace("https://", "wss://").replace("http://", "ws://")}/api/market/ws/${symbol}`;
+    const ws = new WebSocket(wsUrl);
+    ws.onmessage = (e) => {
+      const t = JSON.parse(e.data);
+      if (candleRef.current) candleRef.current.update({ time: t.timestamp, open: t.open, high: t.high, low: t.low, close: t.close });
+    };
+    wsRef.current = ws;
+    return () => ws.close();
+  }, [symbol]);
+
+  useEffect(() => { updateIndicators(); }, [indicators, symbol, timeframe, updateIndicators]);
 
   return (
     <div className="space-y-2" data-testid="chart-terminal-page">
