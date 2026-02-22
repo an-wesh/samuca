@@ -1,7 +1,3 @@
-Go to: https://github.com/an-wesh/samuca/blob/main/frontend/src/pages/ChartTerminalPage.js
-Click the pencil icon (Edit)
-Select all (Ctrl+A) and delete everything
-Paste this entire code:
 import { useState, useEffect, useRef, useCallback } from "react";
 import { createChart, CandlestickSeries, LineSeries, HistogramSeries } from "lightweight-charts";
 import { Button } from "@/components/ui/button";
