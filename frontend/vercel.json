@@ -2,7 +2,7 @@
   "version": 2,
   "framework": "create-react-app",
   "installCommand": "yarn install",
-  "buildCommand": "yarn build",
+  "buildCommand": "CI=false yarn build",
   "outputDirectory": "build",
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
