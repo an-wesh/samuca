@@ -1,17 +1,10 @@
 {
   "version": 2,
+  "framework": "create-react-app",
+  "installCommand": "yarn install",
   "buildCommand": "yarn build",
   "outputDirectory": "build",
-  "framework": "create-react-app",
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
-  ],
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        { "key": "Cache-Control", "value": "no-cache" }
-      ]
-    }
   ]
 }
