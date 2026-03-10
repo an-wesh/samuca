@@ -63,7 +63,7 @@ export default function Sidebar() {
           )}
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="ghost" size="sm" onClick={() => { logout(); navigate("/login"); }} className="w-10 h-10 p-0 rounded-sm text-[#52525B] hover:text-[#FF0055]" data-testid="logout-btn">
+              <Button variant="ghost" size="sm" onClick={() => { logout(); navigate("/login"); }} className="w-10 h-10 p-0 rounded-sm text-[#52525F] hover:text-[#FF0055]" data-testid="logout-btn">
                 <LogOut className="w-5 h-5" />
               </Button>
             </TooltipTrigger>
