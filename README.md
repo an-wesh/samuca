@@ -47,3 +47,9 @@ yarn start
 ## Test Credentials
 - Email: admin@test.com
 - Password: admin123
+
+- {
+  "env_image_name": "fastapi_react_mongo_shadcn_base_image_cloud_arm:release-11022026-1",
+  "job_id": "93f483a6-b57b-4108-bf40-e50dd2f6c352",
+  "created_at": "2026-02-22T10:28:28.261155+00:00Z"
+}
