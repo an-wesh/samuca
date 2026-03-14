@@ -2,7 +2,7 @@ import React from "react";
 
 export default function Blog() {
 	return (
-		<div className="max-w-4xl mx-auto px-6 py-10">
+		<div className="min-h-screen bg-white max-w-4xl mx-auto px-6 py-10">
 			<header className="mb-10">
 				<h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-gray-900">
 					The Hidden Problem in Retail Trading — And Why It Needs AI
