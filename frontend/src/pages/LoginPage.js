@@ -118,7 +118,7 @@ export default function LoginPage() {
         <div className="absolute inset-0 bg-black/80" />
         <div className="absolute inset-0 flex items-center justify-center p-12">
           <div className="text-center max-w-lg">
-            <h2 className="text-4xl font-bold tracking-tight mb-4">AI-Powered Trading Bots</h2>
+            <h2 className="text-4xl font-bold tracking-tight mb-4">AI-Powered Trading</h2>
             <p className="text-lg text-[#A1A1AA]">Build, backtest, and deploy intelligent trading strategies with our no-code platform.</p>
           </div>
         </div>
