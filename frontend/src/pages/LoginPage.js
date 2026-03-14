@@ -62,12 +62,12 @@ export default function LoginPage() {
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center gap-3">
               <Activity className="w-8 h-8 text-[#00E396]" />
-              <h1 className="text-3xl font-bold tracking-tight">TradeForge</h1>
+              <h1 className="text-3xl font-bold tracking-tight">samuca</h1>
           </div>
 
           <Link
             to="/blog"
-            className="text-sm text-[#A1A1AA] hover:text-white transition-colors"
+            className="text-base px-5 py-2 rounded-lg bg-white/5 border border-white/10 text-zinc-300 hover:text-white hover:bg-white/10 backdrop-blur transition-all duration-200"
           >
             Blog
           </Link>
