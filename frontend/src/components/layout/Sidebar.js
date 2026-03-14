@@ -51,16 +51,7 @@ export default function Sidebar() {
           })}
         </nav>
         <div className="mt-auto flex flex-col items-center gap-2">
-          {user && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div className="w-8 h-8 rounded-full bg-[#222] flex items-center justify-center text-xs font-semibold text-[#A1A1AA] cursor-default">
-                  {user.name?.[0]?.toUpperCase() || "U"}
-                </div>
-              </TooltipTrigger>
-              <TooltipContent side="right" className="bg-[#111] border-[#333] text-xs text-white">{user.name || user.email}</TooltipContent>
-            </Tooltip>
-          )}
+         
           <Tooltip>
             <TooltipTrigger asChild>
               <Button variant="ghost" size="sm" onClick={() => { logout(); navigate("/login"); }} className="w-10 h-10 p-0 rounded-sm text-[#FF0000] hover:text-[#FF0055]" data-testid="logout-btn">
