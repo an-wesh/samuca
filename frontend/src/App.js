@@ -28,6 +28,7 @@ function App() {
       <Toaster theme="dark" position="bottom-right" richColors />
       <Routes>
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/blog" element={<Blog />} />
         <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
         <Route path="/builder" element={<ProtectedRoute><BotBuilderPage /></ProtectedRoute>} />
         <Route path="/chart" element={<ProtectedRoute><ChartTerminalPage /></ProtectedRoute>} />
