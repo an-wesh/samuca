@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -64,12 +65,12 @@ export default function LoginPage() {
               <h1 className="text-3xl font-bold tracking-tight">TradeForge</h1>
           </div>
 
-          <button
+          <Link
+            to="/blog"
             className="text-sm text-[#A1A1AA] hover:text-white transition-colors"
-            onClick={() => navigate("/blog")}
           >
             Blog
-          </button>
+          </Link>
         </div>
           <Card className="bg-[#0A0A0A] border-[#222] rounded-sm">
             <CardHeader className="pb-4">
