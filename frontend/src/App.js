@@ -14,6 +14,7 @@ import DeploymentsPage from "@/pages/DeploymentsPage";
 import NewsSentimentPage from "@/pages/NewsSentimentPage";
 import MLBotBuilderPage from "@/pages/MLBotBuilderPage";
 import AdminTerminalPage from "@/pages/AdminTerminalPage";
+import Blog from "@/pages/Blog";
 
 function ProtectedRoute({ children }) {
   const token = useAuthStore((s) => s.token);
