@@ -58,10 +58,19 @@ export default function LoginPage() {
     <div className="min-h-screen flex" data-testid="login-page">
       <div className="flex-1 flex items-center justify-center p-8 bg-[#050505]">
         <div className="w-full max-w-md">
-          <div className="flex items-center gap-3 mb-8">
-            <Activity className="w-8 h-8 text-[#00E396]" />
-            <h1 className="text-3xl font-bold tracking-tight">TradeForge</h1>
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center gap-3">
+              <Activity className="w-8 h-8 text-[#00E396]" />
+              <h1 className="text-3xl font-bold tracking-tight">TradeForge</h1>
           </div>
+
+          <button
+            className="text-sm text-[#A1A1AA] hover:text-white transition-colors"
+            onClick={() => navigate("/blog")}
+          >
+            Blog
+          </button>
+        </div>
           <Card className="bg-[#0A0A0A] border-[#222] rounded-sm">
             <CardHeader className="pb-4">
               <CardTitle className="text-xl">{isLogin ? "Sign In" : "Create Account"}</CardTitle>
