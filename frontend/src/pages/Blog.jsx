@@ -524,7 +524,7 @@ export default function Blog() {
 
 			<hr className="my-10 border-gray-200" />
 
-			<section className="mb-4">
+						<section className="mb-4">
 				<h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-gray-900">
 					Toward Faster, Clearer Trading Decisions
 				</h2>
@@ -547,6 +547,23 @@ export default function Blog() {
 					complex markets, that shift could make all the difference.
 				</p>
 			</section>
+
+			<hr className="my-10 border-gray-200" />
+
+			<footer className="text-center pb-10">
+				<p className="text-gray-600 text-sm sm:text-base">
+					Read the Medium article here:
+				</p>
+
+				<a
+					href="https://medium.com/@anweshh.mohanty/the-hidden-problem-in-retail-trading-and-why-it-needs-ai-99e12bd64089"
+					target="_blank"
+					rel="noopener noreferrer"
+					className="mt-2 inline-block text-blue-600 hover:text-blue-700 underline underline-offset-4 break-words"
+				>
+					LINK
+				</a>
+			</footer>
 		</div>
 	);
 }
