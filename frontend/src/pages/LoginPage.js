@@ -65,14 +65,12 @@ export default function LoginPage() {
               <h1 className="text-3xl font-bold tracking-tight">samuca</h1>
           </div>
 
-          <a
-            href="https://medium.com/@anweshh.mohanty/the-hidden-problem-in-retail-trading-and-why-it-needs-ai-99e12bd64089"
-            target="_blank"
-            rel="noopener noreferrer"
+          <Link
+            to="/blog"
             className="text-base px-5 py-2 rounded-lg bg-white/5 border border-white/10 text-zinc-300 hover:text-white hover:bg-white/10 backdrop-blur transition-all duration-200"
-          >
+           >
             Blog
-          </a>
+          </Link>
         </div>
           <Card className="bg-[#0A0A0A] border-[#222] rounded-sm">
             <CardHeader className="pb-4">
